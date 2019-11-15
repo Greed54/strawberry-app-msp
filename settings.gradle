@@ -1,0 +1,4 @@
+rootProject.name = 'StrawberryApp'
+
+include 'strawberry-core:api'
+include 'strawberry-core:impl'

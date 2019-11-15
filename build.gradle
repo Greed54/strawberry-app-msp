@@ -1,0 +1,301 @@
+buildscript {
+    ext {
+        springBootVersion = '2.2.1.RELEASE'
+        gradleTestSetsVersion = '1.1.0'
+        sonarcubeGradleVersion = '2.7.1'
+    }
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url "https://repo.spring.io/snapshot" }
+        maven { url "https://repo.spring.io/milestone" }
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:${sonarcubeGradleVersion}")
+    }
+}
+
+group 'com.strawberry.app'
+version '1.0-SNAPSHOT'
+
+
+configure(subprojects) { subproject ->
+    apply plugin: "jacoco"
+    apply plugin: "java"
+    apply plugin: "idea"
+    apply plugin: "checkstyle"
+    apply plugin: 'io.spring.dependency-management'
+
+    ext {
+        lombokVersion = '1.18.10'
+        immutablesVersion = '2.8.1'
+        randomBeansVersion = '3.7.0'
+        assertjVersion = '3.11.1'
+        mockitoVersion = '3.1.0'
+        jacksonVersion = '2.10.0'
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom 'org.springframework.boot:spring-boot-dependencies:2.2.1.RELEASE'
+            mavenBom 'org.junit:junit-bom:5.5.1'
+        }
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url 'http://packages.confluent.io/maven/' }
+        maven { url "https://repo.spring.io/milestone" }
+        maven { url "https://repo.spring.io/snapshot" }
+    }
+
+    jacoco {
+        toolVersion = "0.8.3"
+    }
+
+    checkstyle {
+        toolVersion = "8.18"
+        configFile = project.rootProject.file("common/checkstyle/checkstyle.xml")
+    }
+
+    compileJava {
+        sourceCompatibility = 11
+        targetCompatibility = 11
+        options.encoding = 'UTF-8'
+    }
+
+    compileTestJava {
+        sourceCompatibility = 11
+        targetCompatibility = 11
+        options.encoding = 'UTF-8'
+    }
+
+    task sourcesJar(type: Jar) {
+        from sourceSets.main.allJava
+        classifier 'sources'
+    }
+
+    task testJar(type: Jar) {
+        from sourceSets.test.output
+        classifier 'tests'
+    }
+
+    task javadocJar(type: Jar) {
+        from javadoc
+        classifier 'javadoc'
+    }
+
+    jar {
+        baseName = subproject.name in ["api", "impl"] ?
+                subproject.parent.name + "-" + subproject.name : subproject.name
+        manifest.attributes["Created-By"] = "${System.getProperty("java.version")} (${System.getProperty("java.specification.vendor")})"
+        manifest.attributes["Implementation-Title"] = baseName
+        manifest.attributes["Implementation-Version"] = subproject.version
+    }
+
+    configurations {
+        jacoco
+    }
+
+    idea {
+        module {
+            sourceDirs -= file('src/integrationTest/java')
+            testSourceDirs += file('src/integrationTest/java')
+        }
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
+    sourceSets {
+        integrationTest {
+            java.srcDir 'src/integrationTest/java'
+            resources.srcDir 'src/integrationTest/resources'
+        }
+    }
+
+    dependencies {
+        integrationTestCompile sourceSets.main.output
+        integrationTestCompile sourceSets.test.output
+
+        integrationTestCompile configurations.compile
+        integrationTestCompile configurations.testCompile
+
+        integrationTestRuntime configurations.runtime
+        integrationTestRuntime configurations.testRuntime
+    }
+
+    task integrationTest(type: Test) {
+        group = LifecycleBasePlugin.VERIFICATION_GROUP
+        description = 'Runs the integration tests.'
+
+        maxHeapSize = '1024m'
+        useJUnitPlatform()
+
+        testClassesDirs = sourceSets.integrationTest.output.classesDirs
+        classpath = sourceSets.integrationTest.runtimeClasspath
+
+        binResultsDir = file("$buildDir/integration-test-results/binary/integrationTest")
+
+        reports {
+            html.setDestination(file("${buildDir}/reports/integration-test"))
+            junitXml.setDestination(file("${buildDir}/integration-test-results"))
+        }
+
+        mustRunAfter tasks.test
+    }
+
+    check.dependsOn integrationTest
+
+    dependencies {
+        /* Other */
+        compile('com.google.guava:guava:28.1-jre')
+        compile('org.apache.commons:commons-lang3:3.9')
+        compile("org.apache.commons:commons-collections4:4.4")
+        compileOnly("org.projectlombok:lombok:${lombokVersion}")
+        compile('org.json:json:20180130')
+
+        /* Test */
+        testCompile("org.projectlombok:lombok:${lombokVersion}")
+        testCompile('org.junit.jupiter:junit-jupiter-api')
+        testCompile('org.junit.jupiter:junit-jupiter-params')
+        testRuntime('org.junit.jupiter:junit-jupiter-engine')
+
+        testCompile "io.github.benas:random-beans:${randomBeansVersion}"
+    }
+
+    gradle.taskGraph.whenReady { taskGraph ->
+        if (taskGraph.hasTask(':sonarqube')) {
+            test.jvmArgs "-javaagent:${configurations.jacoco.asPath}=destfile=${buildDir}/jacoco.exec,includes=com.vistajet.msp.*"
+        }
+    }
+
+    configurations.all {
+        exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+    }
+
+    clean.doFirst {
+        delete "out/"
+        delete 'generated/'
+        delete 'generated_test/'
+    }
+}
+
+project(":strawberry-core") {
+
+    project(":strawberry-core:api") {
+
+        apply plugin: "maven-publish"
+
+        group = "com.strawberry.app.core"
+        description = "Write Model"
+
+        def generatedApiSources = "${project.buildDir}/generated"
+
+        idea {
+            module {
+                sourceDirs += file(generatedApiSources)
+                inheritOutputDirs = false
+                outputDir = compileJava.destinationDir
+            }
+        }
+
+        compileJava {
+            options.compilerArgs += ["-s", generatedApiSources]
+            doFirst {
+                mkdir generatedApiSources
+            }
+        }
+
+        dependencies {
+            compileOnly("org.immutables:value:${immutablesVersion}")
+        }
+
+        publishing {
+            publications {
+                mavenJava(MavenPublication) {
+                    artifactId 'strawberry-core-api'
+                    from components.java
+
+                    artifact sourcesJar
+                    artifact javadocJar
+                    artifact testJar
+                }
+            }
+            repositories {
+                mavenLocal()
+            }
+        }
+
+    }
+
+    project(":strawberry-core:impl") {
+
+        apply plugin: 'org.springframework.boot'
+        apply plugin: "jacoco"
+        apply plugin: "org.sonarqube"
+
+        project.tasks["jacocoTestReport"].dependsOn "integrationTest"
+        project.tasks["sonarqube"].dependsOn "jacocoTestReport"
+
+        jacocoTestReport {
+            reports {
+                xml.enabled false
+                csv.enabled false
+                html.destination file("${buildDir}/reports/jacoco")
+            }
+            executionData(test)
+        }
+
+        sonarqube {
+            properties {
+                property "sonar.projectKey", "strawberry-core-impl"
+                property "sonar.projectName", "strawberkry-core-impl-develop"
+                property "sonar.jacoco.reportPaths", "${buildDir}/jacoco/integrationTest.exec"
+            }
+        }
+
+        def generatedImplSources = "${project.buildDir}/generated"
+
+        idea {
+            module {
+                sourceDirs += file(generatedImplSources)
+                inheritOutputDirs = false
+                outputDir = compileJava.destinationDir
+            }
+        }
+
+        compileJava {
+            options.compilerArgs += ["-s", generatedImplSources]
+            doFirst {
+                mkdir generatedImplSources
+            }
+        }
+
+        dependencies {
+
+            /* Spring */
+            compile('org.springframework.boot:spring-boot-starter')
+            compile('org.springframework.boot:spring-boot-configuration-processor')
+
+            /* Other */
+            compile("org.immutables:value:${immutablesVersion}")
+            compile "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
+            compile "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
+            compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+
+            /* Test */
+            testCompile 'org.junit.vintage:junit-vintage-engine'
+            testCompile "org.mockito:mockito-core:${mockitoVersion}"
+            testCompile "org.assertj:assertj-core:${assertjVersion}"
+            testCompile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
+            testCompile group: 'commons-io', name: 'commons-io', version: '2.6'
+            testCompile group: 'com.github.pathikrit', name: 'better-files_2.12', version: '3.5.0'
+
+        }
+    }
+}
