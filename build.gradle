@@ -213,6 +213,7 @@ project(":strawberry-core") {
 
         dependencies {
             compileOnly("org.immutables:value:${immutablesVersion}")
+            annotationProcessor "org.immutables:value:${immutablesVersion}"
         }
 
         publishing {
@@ -284,6 +285,7 @@ project(":strawberry-core") {
 
             /* Other */
             compile("org.immutables:value:${immutablesVersion}")
+            annotationProcessor "org.immutables:value:${immutablesVersion}"
             compile "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
             compile "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
             compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
