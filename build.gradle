@@ -35,6 +35,8 @@ configure(subprojects) { subproject ->
         assertjVersion = '3.11.1'
         mockitoVersion = '3.1.0'
         jacksonVersion = '2.10.0'
+
+        axonVersion = '4.2'
     }
 
     dependencyManagement {
@@ -157,6 +159,8 @@ configure(subprojects) { subproject ->
         compile('org.apache.commons:commons-lang3:3.9')
         compile("org.apache.commons:commons-collections4:4.4")
         compileOnly("org.projectlombok:lombok:${lombokVersion}")
+        annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+        annotationProcessor "org.immutables:value:${immutablesVersion}"
         compile('org.json:json:20180130')
 
         /* Test */
@@ -212,8 +216,13 @@ project(":strawberry-core") {
         }
 
         dependencies {
+            compile("org.axonframework:axon-spring-boot-starter:${axonVersion}")
+
             compileOnly("org.immutables:value:${immutablesVersion}")
-            annotationProcessor "org.immutables:value:${immutablesVersion}"
+            compileOnly("org.immutables:annotate:${immutablesVersion}")
+            compile "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
+            compile "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
+            compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
         }
 
         publishing {
@@ -279,18 +288,26 @@ project(":strawberry-core") {
 
         dependencies {
 
+            compile project(":strawberry-core:api")
             /* Spring */
             compile('org.springframework.boot:spring-boot-starter')
+            compile('org.springframework.boot:spring-boot-starter-web')
             compile('org.springframework.boot:spring-boot-configuration-processor')
+            compile("org.axonframework:axon-spring-boot-starter:${axonVersion}")
+
+            runtime('com.h2database:h2:1.4.200')
+            compile("io.springfox:springfox-swagger2:2.9.2")
+            compile("io.springfox:springfox-swagger-ui:2.9.2")
 
             /* Other */
             compile("org.immutables:value:${immutablesVersion}")
-            annotationProcessor "org.immutables:value:${immutablesVersion}"
+            compileOnly("org.immutables:annotate:${immutablesVersion}")
             compile "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
             compile "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
             compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
 
             /* Test */
+            testCompile("org.axonframework:axon-test:${axonVersion}")
             testCompile 'org.junit.vintage:junit-vintage-engine'
             testCompile "org.mockito:mockito-core:${mockitoVersion}"
             testCompile "org.assertj:assertj-core:${assertjVersion}"

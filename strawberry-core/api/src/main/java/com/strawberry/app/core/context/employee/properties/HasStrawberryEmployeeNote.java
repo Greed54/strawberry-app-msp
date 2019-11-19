@@ -1,6 +1,6 @@
 package com.strawberry.app.core.context.employee.properties;
 
-public interface HasStrawberryEmployeeName {
+public interface HasStrawberryEmployeeNote {
 
-  String name();
+  String note();
 }
