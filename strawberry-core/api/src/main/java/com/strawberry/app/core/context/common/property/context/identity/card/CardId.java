@@ -1,11 +1,11 @@
-package com.strawberry.app.core.context.common.property.context.identity;
+package com.strawberry.app.core.context.common.property.context.identity.card;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import java.util.UUID;
+import com.strawberry.app.core.context.common.property.context.identity.BaseStringId;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -15,14 +15,10 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @JsonSerialize
 @JsonDeserialize
-public class PersonId extends BaseStringId {
+public class CardId extends BaseStringId {
 
   @JsonCreator(mode = Mode.PROPERTIES)
-  public PersonId(@JsonProperty("key") String key) {
+  public CardId(@JsonProperty("key") String key) {
     super(key);
-  }
-
-  public static PersonId next() {
-    return new PersonId(UUID.randomUUID().toString());
   }
 }

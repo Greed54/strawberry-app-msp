@@ -1,9 +1,10 @@
 package com.strawberry.app.core.context.employee.command;
 
-import com.strawberry.app.core.context.employee.properties.HasStrawberryEmployeeName;
+import com.strawberry.app.core.context.common.property.context.created.HasCreated;
+import com.strawberry.app.core.context.employee.properties.AllStrawberryEmployeeProps;
 import org.immutables.value.Value.Immutable;
 
 @Immutable
-public interface IAddStrawberryEmployeeCommand extends StrawberryEmployeeCommand, HasStrawberryEmployeeName {
+public interface IAddStrawberryEmployeeCommand extends StrawberryEmployeeCommand, AllStrawberryEmployeeProps, HasCreated {
 
 }
