@@ -3,10 +3,12 @@ buildscript {
         springBootVersion = '2.2.1.RELEASE'
         gradleTestSetsVersion = '1.1.0'
         sonarcubeGradleVersion = '2.7.1'
+        apolloVersion = '1.2.1'
     }
     repositories {
         mavenLocal()
         mavenCentral()
+        jcenter()
         maven { url "https://repo.spring.io/snapshot" }
         maven { url "https://repo.spring.io/milestone" }
         maven { url "https://plugins.gradle.org/m2/" }
@@ -14,6 +16,7 @@ buildscript {
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath("org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:${sonarcubeGradleVersion}")
+        classpath("com.apollographql.apollo:apollo-gradle-plugin:${apolloVersion}")
     }
 }
 
@@ -37,6 +40,7 @@ configure(subprojects) { subproject ->
         jacksonVersion = '2.10.0'
 
         axonVersion = '4.2'
+        apolloVersion = '1.2.1'
     }
 
     dependencyManagement {
@@ -49,6 +53,7 @@ configure(subprojects) { subproject ->
     repositories {
         mavenLocal()
         mavenCentral()
+        jcenter()
         maven { url 'http://packages.confluent.io/maven/' }
         maven { url "https://repo.spring.io/milestone" }
         maven { url "https://repo.spring.io/snapshot" }
@@ -163,6 +168,10 @@ configure(subprojects) { subproject ->
         annotationProcessor "org.immutables:value:${immutablesVersion}"
         compile('org.json:json:20180130')
 
+        compile("com.h2database:h2:1.4.200")
+        compile('org.jetbrains:annotations:16.0.2')
+        compile('cool.graph:cuid-java:0.1.1')
+
         /* Test */
         testCompile("org.projectlombok:lombok:${lombokVersion}")
         testCompile('org.junit.jupiter:junit-jupiter-api')
@@ -220,6 +229,7 @@ project(":strawberry-core") {
 
             compileOnly("org.immutables:value:${immutablesVersion}")
             compileOnly("org.immutables:annotate:${immutablesVersion}")
+            annotationProcessor "org.immutables:value:${immutablesVersion}"
             compile "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
             compile "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
             compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
@@ -295,13 +305,13 @@ project(":strawberry-core") {
             compile('org.springframework.boot:spring-boot-configuration-processor')
             compile("org.axonframework:axon-spring-boot-starter:${axonVersion}")
 
-            runtime('com.h2database:h2:1.4.200')
             compile("io.springfox:springfox-swagger2:2.9.2")
             compile("io.springfox:springfox-swagger-ui:2.9.2")
 
             /* Other */
             compile("org.immutables:value:${immutablesVersion}")
             compileOnly("org.immutables:annotate:${immutablesVersion}")
+            annotationProcessor "org.immutables:value:${immutablesVersion}"
             compile "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
             compile "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
             compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
@@ -315,6 +325,128 @@ project(":strawberry-core") {
             testCompile group: 'commons-io', name: 'commons-io', version: '2.6'
             testCompile group: 'com.github.pathikrit', name: 'better-files_2.12', version: '3.5.0'
 
+        }
+    }
+}
+
+project(":strawberry-read") {
+
+    project(":strawberry-read:api") {
+
+        apply plugin: "maven-publish"
+        apply plugin: 'com.apollographql.android'
+
+        group = "com.strawberry.app.read"
+        description = "Strawberry read model service."
+
+        def generatedApiSources = "${project.buildDir}/generated"
+
+        idea {
+            module {
+                sourceDirs += file(generatedApiSources)
+                inheritOutputDirs = false
+                outputDir = compileJava.destinationDir
+            }
+        }
+
+        compileJava {
+            options.compilerArgs += ["-s", generatedApiSources]
+            doFirst {
+                mkdir generatedApiSources
+            }
+        }
+
+        apollo {
+            nullableValueType = "javaOptional"
+        }
+
+        dependencies {
+            compile project(":strawberry-core:api")
+
+            implementation ("com.apollographql.apollo:apollo-runtime:${apolloVersion}")
+            compileOnly("org.immutables:value:${immutablesVersion}")
+        }
+
+        publishing {
+            publications {
+                mavenJava(MavenPublication) {
+                    artifactId 'strawberry-read-api'
+                    from components.java
+
+                    artifact sourcesJar
+                    artifact javadocJar
+                    artifact testJar
+                }
+            }
+            repositories {
+                mavenLocal()
+            }
+        }
+
+    }
+
+    project(":strawberry-read:impl") {
+
+        apply plugin: 'org.springframework.boot'
+        apply plugin: "jacoco"
+        apply plugin: "org.sonarqube"
+        apply plugin: 'com.apollographql.android'
+
+        project.tasks["jacocoTestReport"].dependsOn "integrationTest"
+        project.tasks["sonarqube"].dependsOn "jacocoTestReport"
+
+        jacocoTestReport {
+            reports {
+                xml.enabled false
+                csv.enabled false
+                html.destination file("${buildDir}/reports/jacoco")
+            }
+            executionData(test)
+        }
+
+        sonarqube {
+            properties {
+                property "sonar.projectKey", "strawberry-read-impl"
+                property "sonar.projectName", "strawberry-read-impl-develop"
+                property "sonar.jacoco.reportPaths", "${buildDir}/jacoco/integrationTest.exec"
+            }
+        }
+
+        def generatedImplSources = "${project.buildDir}/generated"
+
+        idea {
+            module {
+                sourceDirs += file(generatedImplSources)
+                inheritOutputDirs = false
+                outputDir = compileJava.destinationDir
+            }
+        }
+
+        compileJava {
+            options.compilerArgs += ["-s", generatedImplSources]
+            doFirst {
+                mkdir generatedImplSources
+            }
+        }
+
+        dependencies {
+            compile project(":strawberry-core:api")
+            compile project(":strawberry-read:api")
+
+            /* Spring */
+            compile('org.springframework.boot:spring-boot-starter')
+            compile('org.springframework.boot:spring-boot-configuration-processor')
+            compile("org.axonframework:axon-spring-boot-starter:${axonVersion}")
+
+            compile("com.apollographql.apollo:apollo-runtime:${apolloVersion}")
+            compile("com.squareup.okhttp3:okhttp:4.2.2")
+
+            compile "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
+            compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+            /* Test */
+            testCompile "org.assertj:assertj-core:${assertjVersion}"
+            testCompile("org.axonframework:axon-test:${axonVersion}")
+            testCompile("com.squareup.okhttp3:mockwebserver:4.2.2")
         }
     }
 }

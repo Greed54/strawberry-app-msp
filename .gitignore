@@ -18,3 +18,5 @@
 **/out/
 /strawberry-core/api/build/
 /strawberry-core/impl/build/
+/strawberry-read/impl/build/
+/strawberry-read/api/build/

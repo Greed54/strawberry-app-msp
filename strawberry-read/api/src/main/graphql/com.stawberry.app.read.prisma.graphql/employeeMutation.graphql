@@ -1,0 +1,29 @@
+mutation CreateEmployee($data: EmployeeCreateInput!){
+    createEmployee(data: $data) {
+        id
+        cardId
+        firstName
+        lastName
+        employeeRole
+        note
+        createdBy
+        _createdAt
+        modifiedBy
+        modifiedAt
+    }
+}
+
+mutation UpdateEmployee($data: EmployeeUpdateInput!, $where: EmployeeWhereUniqueInput!) {
+    updateEmployee(data: $data, where: $where) {
+        coreID
+        cardId
+        firstName
+        lastName
+        employeeRole
+        note
+        createdBy
+        _createdAt
+        modifiedBy
+        modifiedAt
+    }
+}

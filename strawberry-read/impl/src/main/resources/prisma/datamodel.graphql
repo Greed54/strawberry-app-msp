@@ -1,0 +1,16 @@
+type Employee {
+    id: ID! @id
+    coreID: String @unique
+    cardId: String @unique
+    firstName: String
+    lastName: String
+    employeeRole: String
+    note: String
+    createdBy: String
+    _createdAt: DateTime
+    modifiedBy: String
+    modifiedAt: DateTime
+}
+
+scalar DateTime
+scalar Long
