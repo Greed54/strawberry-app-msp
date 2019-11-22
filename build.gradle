@@ -226,6 +226,7 @@ project(":strawberry-core") {
 
         dependencies {
             compile("org.axonframework:axon-spring-boot-starter:${axonVersion}")
+            compile('org.springframework.boot:spring-boot-starter-data-jpa')
 
             compileOnly("org.immutables:value:${immutablesVersion}")
             compileOnly("org.immutables:annotate:${immutablesVersion}")
@@ -302,6 +303,7 @@ project(":strawberry-core") {
             /* Spring */
             compile('org.springframework.boot:spring-boot-starter')
             compile('org.springframework.boot:spring-boot-starter-web')
+            compile('org.springframework.boot:spring-boot-starter-data-jpa')
             compile('org.springframework.boot:spring-boot-configuration-processor')
             compile("org.axonframework:axon-spring-boot-starter:${axonVersion}")
 
@@ -317,6 +319,7 @@ project(":strawberry-core") {
             compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
 
             /* Test */
+            testCompile('org.springframework.boot:spring-boot-starter-test')
             testCompile("org.axonframework:axon-test:${axonVersion}")
             testCompile 'org.junit.vintage:junit-vintage-engine'
             testCompile "org.mockito:mockito-core:${mockitoVersion}"

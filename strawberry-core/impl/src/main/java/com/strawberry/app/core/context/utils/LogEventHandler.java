@@ -1,5 +1,6 @@
-package com.strawberry.app.core.context.employee.event;
+package com.strawberry.app.core.context.utils;
 
+import com.strawberry.app.core.context.cqrscommon.event.BusinessEvent;
 import com.strawberry.app.core.context.employee.aggregate.StrawberryEmployeeAggregate;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -15,7 +16,7 @@ public class LogEventHandler {
   Logger LOGGER = LoggerFactory.getLogger(StrawberryEmployeeAggregate.class);
 
   @EventHandler
-  public void handleBusinessEvent(StrawberryEmployeeEvent event) {
+  public void handleBusinessEvent(BusinessEvent event) {
     LOGGER.info("Received {}(identity={}), value: {}", event.getClass().getSimpleName(), event.identity(), event);
   }
 }
