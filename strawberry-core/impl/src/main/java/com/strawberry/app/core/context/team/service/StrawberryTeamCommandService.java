@@ -7,5 +7,6 @@ import java.util.concurrent.CompletableFuture;
 public interface StrawberryTeamCommandService {
 
   CompletableFuture<String> createTeam(AddStrawberryTeamCommand addStrawberryTeamCommand);
+
   CompletableFuture<String> amendTeam(AmendStrawberryTeamCommand amendStrawberryTeamCommand);
 }

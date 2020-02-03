@@ -1,7 +1,6 @@
 package com.strawberry.app.core.context.utils;
 
 import com.strawberry.app.core.context.cqrscommon.event.BusinessEvent;
-import com.strawberry.app.core.context.employee.aggregate.StrawberryEmployeeAggregate;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.axonframework.eventhandling.EventHandler;
@@ -13,7 +12,7 @@ import org.springframework.stereotype.Component;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class LogEventHandler {
 
-  Logger LOGGER = LoggerFactory.getLogger(StrawberryEmployeeAggregate.class);
+  Logger LOGGER = LoggerFactory.getLogger(LogEventHandler.class);
 
   @EventHandler
   public void handleBusinessEvent(BusinessEvent event) {

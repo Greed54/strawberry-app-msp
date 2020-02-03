@@ -13,6 +13,7 @@ import com.strawberry.app.core.context.employee.utils.StrawberryEmployeeValidato
 import com.strawberry.app.core.context.enums.EmployeeRole;
 import com.strawberry.app.core.context.validation.ValidationHelper;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.AccessLevel;
@@ -53,5 +54,20 @@ public class AmendStrawberryEmployeeRoleBehavior implements
         .modifiedAt(amendedRoleEvent.modifiedAt())
         .modifiedBy(amendedRoleEvent.modifiedBy())
         .build();
+  }
+
+  @Override
+  public Collection<Class<? extends StrawberryEmployeeCommand>> getSupportedCommands() {
+    return Collections.singletonList(AmendStrawberryEmployeeRoleCommand.class);
+  }
+
+  @Override
+  public Collection<Class<? extends StrawberryEmployeeEvent>> getSupportedEvents() {
+    return Collections.singletonList(StrawberryEmployeeAmendedRoleEvent.class);
+  }
+
+  @Override
+  public Class<? extends StrawberryEmployee> getSupportedState() {
+    return StrawberryEmployee.class;
   }
 }

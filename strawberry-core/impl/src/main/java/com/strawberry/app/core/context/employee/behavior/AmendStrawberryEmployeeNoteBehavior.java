@@ -11,6 +11,7 @@ import com.strawberry.app.core.context.employee.properties.HasStrawberryEmployee
 import com.strawberry.app.core.context.employee.utils.StrawberryEmployeeEventBuilderUtils;
 import com.strawberry.app.core.context.validation.ValidationHelper;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -42,5 +43,20 @@ public class AmendStrawberryEmployeeNoteBehavior implements
         .modifiedAt(amendedNoteEvent.modifiedAt())
         .modifiedBy(amendedNoteEvent.modifiedBy())
         .build();
+  }
+
+  @Override
+  public Collection<Class<? extends StrawberryEmployeeCommand>> getSupportedCommands() {
+    return Collections.singletonList(AmendStrawberryEmployeeNoteCommand.class);
+  }
+
+  @Override
+  public Collection<Class<? extends StrawberryEmployeeEvent>> getSupportedEvents() {
+    return Collections.singletonList(StrawberryEmployeeAmendedNoteEvent.class);
+  }
+
+  @Override
+  public Class<? extends StrawberryEmployee> getSupportedState() {
+    return StrawberryEmployee.class;
   }
 }

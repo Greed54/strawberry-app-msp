@@ -1,9 +1,8 @@
-package com.strawberry.app.core.context.employee.utils;
+package com.strawberry.app.core.context.team.utils;
 
 import static com.strawberry.app.core.context.validation.ValidationUtils.isPresent;
-import static com.strawberry.app.core.context.validation.ValidationUtils.validateCollectionEmpty;
 
-import com.strawberry.app.core.context.common.property.context.identity.card.CardId;
+import com.strawberry.app.core.context.employee.identities.StrawberryEmployeeId;
 import com.strawberry.app.core.context.employee.service.StrawberryEmployeeService;
 import com.strawberry.app.core.context.team.identities.StrawberryTeamId;
 import com.strawberry.app.core.context.team.service.StrawberryTeamService;
@@ -16,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @AllArgsConstructor
-public class StrawberryEmployeeValidator {
+public class StrawberryTeamValidator {
 
   StrawberryTeamService strawberryTeamService;
   StrawberryEmployeeService strawberryEmployeeService;
@@ -25,11 +24,8 @@ public class StrawberryEmployeeValidator {
     return isPresent(strawberryTeamService::getActiveStrawberryTeam, teamId);
   }
 
-  public ValidationResult validateTeamLeadIsExist(StrawberryTeamId teamId) {
-    return validateCollectionEmpty(strawberryEmployeeService.getTeamLeadEmployeeByTeam(teamId), "Team lead is exist or ");
+  public ValidationResult validateEmployee(StrawberryEmployeeId employeeId) {
+    return isPresent(strawberryEmployeeService::getActiveStrawberryEmployee, employeeId);
   }
 
-  public ValidationResult validateCardIdIsExist(CardId cardId) {
-    return validateCollectionEmpty(strawberryEmployeeService.getEmployeesByCardId(cardId), "Card id is exist or ");
-  }
 }

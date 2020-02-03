@@ -13,27 +13,27 @@ import com.strawberry.app.core.context.employee.utils.StrawberryEmployeeValidato
 import com.strawberry.app.core.context.enums.EmployeeRole;
 import com.strawberry.app.core.context.validation.ValidationHelper;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Component;
 
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@AllArgsConstructor
 public class AddStrawberryEmployeeBehavior implements
     Behavior<StrawberryEmployeeId, StrawberryEmployeeEvent, StrawberryEmployeeCommand, StrawberryEmployee> {
 
   StrawberryEmployeeValidator employeeValidator;
 
-  public AddStrawberryEmployeeBehavior(StrawberryEmployeeValidator employeeValidator) {
-    this.employeeValidator = employeeValidator;
-  }
-
   @Override
   public Collection<StrawberryEmployeeEvent> commandToEvents(StrawberryEmployeeCommand command, Optional<StrawberryEmployee> state) {
     return new ValidationHelper<StrawberryEmployeeId, StrawberryEmployee, StrawberryEmployeeEvent, AddStrawberryEmployeeCommand>(state,
         (AddStrawberryEmployeeCommand) command)
+        .notPresent()
         .validate((addStrawberryEmployeeCommand, strawberryEmployee) -> employeeValidator.validateTeam(addStrawberryEmployeeCommand.teamId()))
         .validateIf(addStrawberryEmployeeCommand -> Objects.equals(addStrawberryEmployeeCommand.employeeRole(), EmployeeRole.TEAM_LEAD),
             (addStrawberryEmployeeCommand, strawberryEmployee) -> employeeValidator.validateTeamLeadIsExist(addStrawberryEmployeeCommand.teamId()))
@@ -51,5 +51,20 @@ public class AddStrawberryEmployeeBehavior implements
     return StrawberryEmployee.builder()
         .from(event)
         .build();
+  }
+
+  @Override
+  public Collection<Class<? extends StrawberryEmployeeCommand>> getSupportedCommands() {
+    return Collections.singletonList(AddStrawberryEmployeeCommand.class);
+  }
+
+  @Override
+  public Collection<Class<? extends StrawberryEmployeeEvent>> getSupportedEvents() {
+    return Collections.singletonList(StrawberryEmployeeAddedEvent.class);
+  }
+
+  @Override
+  public Class<? extends StrawberryEmployee> getSupportedState() {
+    return StrawberryEmployee.class;
   }
 }

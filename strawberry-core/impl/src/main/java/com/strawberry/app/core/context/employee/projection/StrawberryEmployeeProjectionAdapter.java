@@ -1,44 +1,50 @@
 package com.strawberry.app.core.context.employee.projection;
 
+import com.strawberry.app.core.context.common.behavior.Behavior;
+import com.strawberry.app.core.context.common.behavior.DefaultBehaviorEngine;
+import com.strawberry.app.core.context.employee.StrawberryEmployee;
+import com.strawberry.app.core.context.employee.command.StrawberryEmployeeCommand;
 import com.strawberry.app.core.context.employee.event.StrawberryEmployeeEvent;
-import com.strawberry.app.core.context.employee.service.StrawberryEmployeeProjectionService;
-import com.strawberry.app.core.context.utils.Util;
+import com.strawberry.app.core.context.employee.identities.StrawberryEmployeeId;
+import com.strawberry.app.core.context.employee.service.StrawberryEmployeeService;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import org.axonframework.eventhandling.EventBus;
 import org.axonframework.eventhandling.EventHandler;
-import org.axonframework.eventhandling.gateway.EventGateway;
-import org.axonframework.eventsourcing.eventstore.EventStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.event.ContextStartedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class StrawberryEmployeeProjectionAdapter {
 
-  StrawberryEmployeeProjectionService employeeProjectionService;
-  EventGateway eventGateway;
-  Logger LOGGER = LoggerFactory.getLogger(StrawberryEmployeeProjectionAdapter.class);
+  StrawberryEmployeeService employeeService;
+  DefaultBehaviorEngine defaultBehaviorEngine;
 
-  public StrawberryEmployeeProjectionAdapter(
-      StrawberryEmployeeProjectionService employeeProjectionService, EventGateway eventGateway) {
-    this.employeeProjectionService = employeeProjectionService;
-    this.eventGateway = eventGateway;
+  Logger LOGGER = LoggerFactory.getLogger(StrawberryEmployeeProjectionAdapter.class);
+  boolean isStarted = false;
+
+  public StrawberryEmployeeProjectionAdapter(StrawberryEmployeeService employeeService, DefaultBehaviorEngine defaultBehaviorEngine) {
+    this.employeeService = employeeService;
+    this.defaultBehaviorEngine = defaultBehaviorEngine;
+  }
+
+  @EventListener
+  public void handleContextStarted(ContextStartedEvent contextStartedEvent) {
+    isStarted = true;
   }
 
   @EventHandler
-  public void onProject(StrawberryEmployeeEvent event) {
-    StrawberryEmployeeProjectionEvent employeeProjectionEvent = StrawberryEmployeeProjectionEvent.builder()
-        .from(event)
-        .build();
+  public void convert(StrawberryEmployeeEvent event) {
+    if (!isStarted) {
+      Behavior<StrawberryEmployeeId, StrawberryEmployeeEvent, StrawberryEmployeeCommand, StrawberryEmployee> behavior = defaultBehaviorEngine
+          .getBehavior(event.getClass());
+      defaultBehaviorEngine.project(behavior.eventToState(event, employeeService.getEmployee(event.identity())));
 
-    eventGateway.publish(employeeProjectionEvent);
-
-    StrawberryEmployeeProjectionEntity strawberryEmployeeProjectionEntity = employeeProjectionService
-        .saveProjection(Util.mapEmployeeProjectionEvent(employeeProjectionEvent));
-
-    LOGGER.info("Projected {}(identity={}), value: {}", event.getClass().getSimpleName(), strawberryEmployeeProjectionEntity.getIdentity(),
-        employeeProjectionEvent);
+      LOGGER.info("Restored {}(identity={}), value: {}", event.getClass().getSimpleName(), event.identity(), event);
+    }
   }
+
 }

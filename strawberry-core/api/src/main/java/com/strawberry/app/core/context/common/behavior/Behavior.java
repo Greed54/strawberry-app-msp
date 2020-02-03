@@ -15,4 +15,11 @@ public interface Behavior<Key extends Identity<?>,
   Collection<EventValue> commandToEvents(CommandValue command, Optional<StateValue> state);
 
   StateValue eventToState(EventValue event, Optional<StateValue> current);
+
+  Collection<Class<? extends CommandValue>> getSupportedCommands();
+
+  Collection<Class<? extends EventValue>> getSupportedEvents();
+
+  Class<? extends StateValue> getSupportedState();
+
 }

@@ -169,6 +169,8 @@ configure(subprojects) { subproject ->
         compile('org.json:json:20180130')
 
         compile("com.h2database:h2:1.4.200")
+        compile ("org.rocksdb:rocksdbjni:6.5.3")
+        compile ("com.googlecode.cqengine:cqengine:3.4.0")
         compile('org.jetbrains:annotations:16.0.2')
         compile('cool.graph:cuid-java:0.1.1')
 
