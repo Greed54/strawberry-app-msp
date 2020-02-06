@@ -1,4 +1,4 @@
-package com.strawberry.app.core.application;
+package com.strawberry.app.core.application.controller;
 
 
 import com.strawberry.app.core.context.employee.command.AddStrawberryEmployeeCommand;
@@ -7,18 +7,19 @@ import com.strawberry.app.core.context.employee.command.AmendStrawberryEmployeeN
 import com.strawberry.app.core.context.employee.command.AmendStrawberryEmployeeRoleCommand;
 import com.strawberry.app.core.context.employee.service.StrawberryEmployeeCommandServiceImpl;
 import java.util.concurrent.CompletableFuture;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@AllArgsConstructor
 public class EmployeeController {
 
-  private final StrawberryEmployeeCommandServiceImpl commandService;
-
-  public EmployeeController(StrawberryEmployeeCommandServiceImpl commandService) {
-    this.commandService = commandService;
-  }
+  StrawberryEmployeeCommandServiceImpl commandService;
 
   @PostMapping("/api/addEmployee")
   public CompletableFuture<String> addEmployee(@RequestBody AddStrawberryEmployeeCommand addStrawberryEmployeeCommand) {

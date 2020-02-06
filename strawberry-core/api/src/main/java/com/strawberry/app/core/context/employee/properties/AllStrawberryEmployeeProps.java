@@ -5,7 +5,8 @@ import com.strawberry.app.core.context.common.property.context.identity.card.Has
 public interface AllStrawberryEmployeeProps extends HasStrawberryCardId,
     HasStrawberryEmployeeFirstName,
     HasStrawberryEmployeeLastName,
-    HasStrawberryEmployeeRole, //TODO: teamID
+    HasStrawberryEmployeeRole,
+    HasStrawberryEmployeeTeamId,
     HasStrawberryEmployeeNote {
 
 }

@@ -1,4 +1,4 @@
-type Employee {
+type SEmployee {
     id: ID! @id
     coreID: String @unique
     cardId: String @unique
@@ -6,10 +6,56 @@ type Employee {
     lastName: String
     employeeRole: String
     note: String
+    team: STeam
     createdBy: String
     _createdAt: DateTime
     modifiedBy: String
     modifiedAt: DateTime
+    removed: Boolean
+}
+
+type STeam {
+    id: ID! @id
+    coreID: String @unique
+    teamName: String
+    teamLead: String
+    createdBy: String
+    _createdAt: DateTime
+    modifiedBy: String
+    modifiedAt: DateTime
+    removed: Boolean
+}
+
+type SWorkDay {
+    id: ID! @id
+    coreID: String @unique
+    date: DateTime
+    boxes: Int
+    kilograms: Float
+    allSalarys: Float
+    teams: [STeam!]!
+    pricePerKilo: Float
+    tareWeight: Float
+    createdBy: String
+    _createdAt: DateTime
+    modifiedBy: String
+    modifiedAt: DateTime
+    removed: Boolean
+}
+
+type SBox {
+    id: ID! @id
+    coreID: String @unique
+    employee: SEmployee
+    workDay: SWorkDay
+    kilograms: Float
+    boxes: Int
+    weightNumber: Int
+    createdBy: String
+    _createdAt: DateTime
+    modifiedBy: String
+    modifiedAt: DateTime
+    removed: Boolean
 }
 
 scalar DateTime

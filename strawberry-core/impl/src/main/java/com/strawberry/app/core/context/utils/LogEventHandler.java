@@ -1,6 +1,6 @@
-package com.strawberry.app.core.context.employee.event;
+package com.strawberry.app.core.context.utils;
 
-import com.strawberry.app.core.context.employee.aggregate.StrawberryEmployeeAggregate;
+import com.strawberry.app.core.context.cqrscommon.event.BusinessEvent;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.axonframework.eventhandling.EventHandler;
@@ -12,10 +12,10 @@ import org.springframework.stereotype.Component;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class LogEventHandler {
 
-  Logger LOGGER = LoggerFactory.getLogger(StrawberryEmployeeAggregate.class);
+  Logger LOGGER = LoggerFactory.getLogger(LogEventHandler.class);
 
   @EventHandler
-  public void handleBusinessEvent(StrawberryEmployeeEvent event) {
+  public void handleBusinessEvent(BusinessEvent event) {
     LOGGER.info("Received {}(identity={}), value: {}", event.getClass().getSimpleName(), event.identity(), event);
   }
 }
