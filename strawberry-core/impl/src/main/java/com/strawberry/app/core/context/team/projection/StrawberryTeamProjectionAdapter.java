@@ -1,7 +1,7 @@
 package com.strawberry.app.core.context.team.projection;
 
-import com.strawberry.app.core.context.common.behavior.Behavior;
-import com.strawberry.app.core.context.common.behavior.DefaultBehaviorEngine;
+import com.strawberry.app.common.behavior.Behavior;
+import com.strawberry.app.common.behavior.DefaultBehaviorEngine;
 import com.strawberry.app.core.context.team.StrawberryTeam;
 import com.strawberry.app.core.context.team.command.StrawberryTeamCommand;
 import com.strawberry.app.core.context.team.event.StrawberryTeamEvent;

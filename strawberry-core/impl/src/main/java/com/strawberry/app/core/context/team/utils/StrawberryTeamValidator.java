@@ -1,12 +1,12 @@
 package com.strawberry.app.core.context.team.utils;
 
-import static com.strawberry.app.core.context.validation.ValidationUtils.isPresent;
+import static com.strawberry.app.common.ValidationUtils.isPresent;
 
+import com.strawberry.app.common.context.ValidationResult;
 import com.strawberry.app.core.context.employee.identities.StrawberryEmployeeId;
 import com.strawberry.app.core.context.employee.service.StrawberryEmployeeService;
 import com.strawberry.app.core.context.team.identities.StrawberryTeamId;
 import com.strawberry.app.core.context.team.service.StrawberryTeamService;
-import com.strawberry.app.core.context.validation.context.ValidationResult;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;

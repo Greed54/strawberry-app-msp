@@ -2,8 +2,8 @@ package com.strawberry.app.core.context.employee.aggregate;
 
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
 
-import com.strawberry.app.core.context.common.behavior.Behavior;
-import com.strawberry.app.core.context.common.behavior.DefaultBehaviorEngine;
+import com.strawberry.app.common.behavior.Behavior;
+import com.strawberry.app.common.behavior.DefaultBehaviorEngine;
 import com.strawberry.app.core.context.employee.StrawberryEmployee;
 import com.strawberry.app.core.context.employee.command.AddStrawberryEmployeeCommand;
 import com.strawberry.app.core.context.employee.command.AmendStrawberryEmployeeCommand;

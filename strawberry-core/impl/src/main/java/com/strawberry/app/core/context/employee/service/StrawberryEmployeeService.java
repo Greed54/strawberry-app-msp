@@ -1,7 +1,7 @@
 package com.strawberry.app.core.context.employee.service;
 
 import com.googlecode.cqengine.query.QueryFactory;
-import com.strawberry.app.core.context.common.property.context.identity.card.CardId;
+import com.strawberry.app.common.property.context.identity.card.CardId;
 import com.strawberry.app.core.context.employee.IStrawberryEmployee.Attributes;
 import com.strawberry.app.core.context.employee.StrawberryEmployee;
 import com.strawberry.app.core.context.employee.identities.StrawberryEmployeeId;

@@ -1,6 +1,7 @@
 package com.strawberry.app.core.context.team.behavior;
 
-import com.strawberry.app.core.context.common.behavior.Behavior;
+import com.strawberry.app.common.ValidationHelper;
+import com.strawberry.app.common.behavior.Behavior;
 import com.strawberry.app.core.context.team.StrawberryTeam;
 import com.strawberry.app.core.context.team.command.AmendStrawberryTeamCommand;
 import com.strawberry.app.core.context.team.command.StrawberryTeamCommand;
@@ -10,7 +11,6 @@ import com.strawberry.app.core.context.team.identities.StrawberryTeamId;
 import com.strawberry.app.core.context.team.properties.HasStrawberryTeamId;
 import com.strawberry.app.core.context.team.utils.StrawberryTeamEventBuilderUtils;
 import com.strawberry.app.core.context.team.utils.StrawberryTeamValidator;
-import com.strawberry.app.core.context.validation.ValidationHelper;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;

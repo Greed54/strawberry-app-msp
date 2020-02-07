@@ -1,6 +1,6 @@
 package com.strawberry.app.core.context.employee.event;
 
-import com.strawberry.app.core.context.cqrscommon.event.BusinessEvent;
+import com.strawberry.app.common.event.BusinessEvent;
 import com.strawberry.app.core.context.employee.identities.StrawberryEmployeeId;
 import com.strawberry.app.core.context.employee.properties.HasStrawberryEmployeeId;
 

@@ -2,8 +2,8 @@ package com.strawberry.app.core.context.team.aggregate;
 
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
 
-import com.strawberry.app.core.context.common.behavior.Behavior;
-import com.strawberry.app.core.context.common.behavior.DefaultBehaviorEngine;
+import com.strawberry.app.common.behavior.Behavior;
+import com.strawberry.app.common.behavior.DefaultBehaviorEngine;
 import com.strawberry.app.core.context.team.StrawberryTeam;
 import com.strawberry.app.core.context.team.command.AddStrawberryTeamCommand;
 import com.strawberry.app.core.context.team.command.AmendStrawberryTeamCommand;
@@ -17,8 +17,6 @@ import com.strawberry.app.core.context.team.service.StrawberryTeamService;
 import java.util.Collection;
 import java.util.Optional;
 import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventhandling.EventHandler;

@@ -1,7 +1,7 @@
 package com.strawberry.app.core.context.employee.projection;
 
-import com.strawberry.app.core.context.common.behavior.Behavior;
-import com.strawberry.app.core.context.common.behavior.DefaultBehaviorEngine;
+import com.strawberry.app.common.behavior.Behavior;
+import com.strawberry.app.common.behavior.DefaultBehaviorEngine;
 import com.strawberry.app.core.context.employee.StrawberryEmployee;
 import com.strawberry.app.core.context.employee.command.StrawberryEmployeeCommand;
 import com.strawberry.app.core.context.employee.event.StrawberryEmployeeEvent;

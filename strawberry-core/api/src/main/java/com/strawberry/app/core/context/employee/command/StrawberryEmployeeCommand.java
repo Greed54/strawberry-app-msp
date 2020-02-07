@@ -1,6 +1,6 @@
 package com.strawberry.app.core.context.employee.command;
 
-import com.strawberry.app.core.context.cqrscommon.Command;
+import com.strawberry.app.common.Command;
 import com.strawberry.app.core.context.employee.identities.StrawberryEmployeeId;
 import com.strawberry.app.core.context.employee.properties.HasStrawberryEmployeeId;
 

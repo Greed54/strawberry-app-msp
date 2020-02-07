@@ -1,6 +1,6 @@
 package com.strawberry.app.core.context.utils;
 
-import com.strawberry.app.core.context.cqrscommon.event.BusinessEvent;
+import com.strawberry.app.common.event.BusinessEvent;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.axonframework.eventhandling.EventHandler;
