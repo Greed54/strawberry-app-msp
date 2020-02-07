@@ -1,6 +1,7 @@
 package com.strawberry.app.core.context.employee.behavior;
 
-import com.strawberry.app.core.context.common.behavior.Behavior;
+import com.strawberry.app.common.ValidationHelper;
+import com.strawberry.app.common.behavior.Behavior;
 import com.strawberry.app.core.context.employee.StrawberryEmployee;
 import com.strawberry.app.core.context.employee.command.AmendStrawberryEmployeeNoteCommand;
 import com.strawberry.app.core.context.employee.command.StrawberryEmployeeCommand;
@@ -9,7 +10,6 @@ import com.strawberry.app.core.context.employee.event.StrawberryEmployeeEvent;
 import com.strawberry.app.core.context.employee.identities.StrawberryEmployeeId;
 import com.strawberry.app.core.context.employee.properties.HasStrawberryEmployeeId;
 import com.strawberry.app.core.context.employee.utils.StrawberryEmployeeEventBuilderUtils;
-import com.strawberry.app.core.context.validation.ValidationHelper;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -37,7 +37,7 @@ public class AmendStrawberryEmployeeNoteBehavior implements
   @Override
   public StrawberryEmployee eventToState(StrawberryEmployeeEvent event, Optional<StrawberryEmployee> current) {
     StrawberryEmployeeAmendedNoteEvent amendedNoteEvent = (StrawberryEmployeeAmendedNoteEvent) event;
-    return  StrawberryEmployee.builder()
+    return StrawberryEmployee.builder()
         .from(current.get())
         .from(event)
         .modifiedAt(amendedNoteEvent.modifiedAt())

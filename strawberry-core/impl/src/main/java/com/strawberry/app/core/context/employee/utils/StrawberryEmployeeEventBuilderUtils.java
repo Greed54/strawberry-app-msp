@@ -1,7 +1,7 @@
 package com.strawberry.app.core.context.employee.utils;
 
-import static com.strawberry.app.core.context.common.utils.read.event.Util.getModifiedAt;
-import static com.strawberry.app.core.context.common.utils.read.event.Util.getModifiedBy;
+import static com.strawberry.app.common.utils.read.event.Util.getModifiedAt;
+import static com.strawberry.app.common.utils.read.event.Util.getModifiedBy;
 
 import com.strawberry.app.core.context.employee.command.StrawberryEmployeeCommand;
 import com.strawberry.app.core.context.employee.event.StrawberryEmployeeEvent;

@@ -1,7 +1,7 @@
 package com.strawberry.app.core.application.store;
 
-import com.strawberry.app.core.context.common.cqengine.indexedstore.IndexedStoreBuilder;
-import com.strawberry.app.core.context.common.cqengine.indexedstore.IndexedStoreImpl;
+import com.strawberry.app.common.cqengine.indexedstore.IndexedStoreBuilder;
+import com.strawberry.app.common.cqengine.indexedstore.IndexedStoreImpl;
 import com.strawberry.app.core.context.employee.StrawberryEmployee;
 import com.strawberry.app.core.context.employee.identities.StrawberryEmployeeId;
 import com.strawberry.app.core.context.team.StrawberryTeam;

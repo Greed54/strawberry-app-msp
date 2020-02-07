@@ -5,3 +5,9 @@ include 'strawberry-core:impl'
 
 include 'strawberry-read:api'
 include 'strawberry-read:impl'
+
+include 'msp-common:behavior'
+include 'msp-common:cqrs'
+include 'msp-common:property'
+include 'msp-common:statestore'
+include 'msp-common:validation'

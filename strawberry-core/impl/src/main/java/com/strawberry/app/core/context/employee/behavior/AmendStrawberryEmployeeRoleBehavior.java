@@ -1,6 +1,7 @@
 package com.strawberry.app.core.context.employee.behavior;
 
-import com.strawberry.app.core.context.common.behavior.Behavior;
+import com.strawberry.app.common.ValidationHelper;
+import com.strawberry.app.common.behavior.Behavior;
 import com.strawberry.app.core.context.employee.StrawberryEmployee;
 import com.strawberry.app.core.context.employee.command.AmendStrawberryEmployeeRoleCommand;
 import com.strawberry.app.core.context.employee.command.StrawberryEmployeeCommand;
@@ -11,7 +12,6 @@ import com.strawberry.app.core.context.employee.properties.HasStrawberryEmployee
 import com.strawberry.app.core.context.employee.utils.StrawberryEmployeeEventBuilderUtils;
 import com.strawberry.app.core.context.employee.utils.StrawberryEmployeeValidator;
 import com.strawberry.app.core.context.enums.EmployeeRole;
-import com.strawberry.app.core.context.validation.ValidationHelper;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
