@@ -1,7 +1,7 @@
 package com.strawberry.app.core.context.employee.command;
 
-import com.strawberry.app.core.context.common.property.context.identity.card.HasStrawberryCardId;
-import com.strawberry.app.core.context.common.property.context.modified.HasModified;
+import com.strawberry.app.common.property.context.identity.card.HasStrawberryCardId;
+import com.strawberry.app.common.property.context.modified.HasModified;
 import com.strawberry.app.core.context.employee.properties.HasStrawberryEmployeeFirstName;
 import com.strawberry.app.core.context.employee.properties.HasStrawberryEmployeeLastName;
 import com.strawberry.app.core.context.employee.properties.HasStrawberryEmployeeNote;

@@ -2,10 +2,10 @@ package com.strawberry.app.core.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.strawberry.app.core.application.store.StoreBuilder;
-import com.strawberry.app.core.context.common.behavior.Behavior;
-import com.strawberry.app.core.context.common.behavior.DefaultBehaviorEngine;
-import com.strawberry.app.core.context.common.cqengine.RepositoryFactory;
-import com.strawberry.app.core.context.common.cqengine.indexedstore.IndexedStoreImpl;
+import com.strawberry.app.common.behavior.Behavior;
+import com.strawberry.app.common.behavior.DefaultBehaviorEngine;
+import com.strawberry.app.common.cqengine.RepositoryFactory;
+import com.strawberry.app.common.cqengine.indexedstore.IndexedStoreImpl;
 import com.strawberry.app.core.context.utils.service.RepositoryService;
 import java.util.List;
 import java.util.stream.Collectors;

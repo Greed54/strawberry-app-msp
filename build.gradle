@@ -168,9 +168,6 @@ configure(subprojects) { subproject ->
         annotationProcessor "org.immutables:value:${immutablesVersion}"
         compile('org.json:json:20180130')
 
-        compile("com.h2database:h2:1.4.200")
-        compile ("org.rocksdb:rocksdbjni:6.5.3")
-        compile ("com.googlecode.cqengine:cqengine:3.4.0")
         compile('org.jetbrains:annotations:16.0.2')
         compile('cool.graph:cuid-java:0.1.1')
 
@@ -227,8 +224,7 @@ project(":strawberry-core") {
         }
 
         dependencies {
-            compile("org.axonframework:axon-spring-boot-starter:${axonVersion}")
-            compile('org.springframework.boot:spring-boot-starter-data-jpa')
+            compile project(":msp-common:property")
 
             compileOnly("org.immutables:value:${immutablesVersion}")
             compileOnly("org.immutables:annotate:${immutablesVersion}")
@@ -302,6 +298,9 @@ project(":strawberry-core") {
         dependencies {
 
             compile project(":strawberry-core:api")
+            compile project(":msp-common:behavior")
+            compile project(":msp-common:validation")
+
             /* Spring */
             compile('org.springframework.boot:spring-boot-starter')
             compile('org.springframework.boot:spring-boot-starter-web')
@@ -454,4 +453,174 @@ project(":strawberry-read") {
             testCompile("com.squareup.okhttp3:mockwebserver:4.2.2")
         }
     }
+}
+
+project(":msp-common") {
+
+    project(":msp-common:validation") {
+
+        apply plugin: "maven-publish"
+
+        group = "com.strawbwerry.app.common"
+
+        description = "Validation lib"
+
+        dependencies {
+            compile project(":msp-common:property")
+        }
+
+        publishing {
+            publications {
+                mavenJava(MavenPublication) {
+                    artifactId 'validation'
+                    from components.java
+
+                    artifact sourcesJar
+                    artifact javadocJar
+                    artifact testJar
+                }
+            }
+            repositories {
+                mavenLocal()
+            }
+        }
+
+    }
+
+    project(":msp-common:property") {
+
+        apply plugin: "maven-publish"
+
+        group = "com.strawbwerry.app.common"
+
+        description = "Property lib"
+
+        dependencies {
+            compile project(":msp-common:cqrs")
+            compile "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
+            compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+            compile("org.axonframework:axon-spring-boot-starter:${axonVersion}")
+            compileOnly("org.immutables:value:${immutablesVersion}")
+            compileOnly("org.immutables:annotate:${immutablesVersion}")
+            annotationProcessor "org.immutables:value:${immutablesVersion}"
+        }
+
+        publishing {
+            publications {
+                mavenJava(MavenPublication) {
+                    artifactId 'property'
+                    from components.java
+
+                    artifact sourcesJar
+                    artifact javadocJar
+                    artifact testJar
+                }
+            }
+            repositories {
+                mavenLocal()
+            }
+        }
+
+    }
+
+    project(":msp-common:cqrs") {
+
+        apply plugin: "maven-publish"
+
+        group = "com.strawbwerry.app.common"
+
+        description = "CQRS lib"
+
+        dependencies {
+
+            compile("org.axonframework:axon-spring-boot-starter:${axonVersion}")
+            compileOnly("org.immutables:value:${immutablesVersion}")
+            compileOnly("org.immutables:annotate:${immutablesVersion}")
+            annotationProcessor "org.immutables:value:${immutablesVersion}"
+        }
+
+        publishing {
+            publications {
+                mavenJava(MavenPublication) {
+                    artifactId 'read'
+                    from components.java
+
+                    artifact sourcesJar
+                    artifact javadocJar
+                    artifact testJar
+                }
+            }
+            repositories {
+                mavenLocal()
+            }
+        }
+
+    }
+
+    project(":msp-common:behavior") {
+
+        apply plugin: "maven-publish"
+
+        group = "com.strawbwerry.app.common"
+
+        description = "Behavior lib"
+
+        dependencies {
+
+            compile project(":msp-common:property")
+            compile project(":msp-common:statestore")
+        }
+
+        publishing {
+            publications {
+                mavenJava(MavenPublication) {
+                    artifactId 'read'
+                    from components.java
+
+                    artifact sourcesJar
+                    artifact javadocJar
+                    artifact testJar
+                }
+            }
+            repositories {
+                mavenLocal()
+            }
+        }
+
+    }
+
+    project(":msp-common:statestore") {
+
+        apply plugin: "maven-publish"
+
+        group = "com.strawbwerry.app.common"
+
+        description = "Statestore lib"
+
+        dependencies {
+
+            compile ("org.rocksdb:rocksdbjni:6.5.3")
+            compile ("com.googlecode.cqengine:cqengine:3.4.0")
+            compile('org.springframework.boot:spring-boot-starter')
+            compile project(":msp-common:property")
+        }
+
+        publishing {
+            publications {
+                mavenJava(MavenPublication) {
+                    artifactId 'read'
+                    from components.java
+
+                    artifact sourcesJar
+                    artifact javadocJar
+                    artifact testJar
+                }
+            }
+            repositories {
+                mavenLocal()
+            }
+        }
+
+    }
+
 }
