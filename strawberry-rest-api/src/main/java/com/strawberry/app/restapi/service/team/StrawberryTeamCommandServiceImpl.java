@@ -1,12 +1,12 @@
-package com.strawberry.app.core.context.team.service;
+package com.strawberry.app.restapi.service.team;
 
 import com.strawberry.app.core.context.team.command.AddStrawberryTeamCommand;
 import com.strawberry.app.core.context.team.command.AmendStrawberryTeamCommand;
-import java.util.concurrent.CompletableFuture;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -19,12 +19,12 @@ public class StrawberryTeamCommandServiceImpl implements StrawberryTeamCommandSe
   }
 
   @Override
-  public CompletableFuture<String> createTeam(AddStrawberryTeamCommand addStrawberryTeamCommand) {
-    return commandGateway.send(addStrawberryTeamCommand);
+  public Mono<String> createTeam(AddStrawberryTeamCommand addStrawberryTeamCommand) {
+    return Mono.fromFuture(commandGateway.send(addStrawberryTeamCommand));
   }
 
   @Override
-  public CompletableFuture<String> amendTeam(AmendStrawberryTeamCommand amendStrawberryTeamCommand) {
-    return commandGateway.send(amendStrawberryTeamCommand);
+  public Mono<String> amendTeam(AmendStrawberryTeamCommand amendStrawberryTeamCommand) {
+    return Mono.fromFuture(commandGateway.send(amendStrawberryTeamCommand));
   }
 }

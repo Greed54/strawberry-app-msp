@@ -1,14 +1,14 @@
-package com.strawberry.app.core.context.employee.service;
+package com.strawberry.app.restapi.service.employee;
 
 import com.strawberry.app.core.context.employee.command.AddStrawberryEmployeeCommand;
 import com.strawberry.app.core.context.employee.command.AmendStrawberryEmployeeCommand;
 import com.strawberry.app.core.context.employee.command.AmendStrawberryEmployeeNoteCommand;
 import com.strawberry.app.core.context.employee.command.AmendStrawberryEmployeeRoleCommand;
-import java.util.concurrent.CompletableFuture;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -21,22 +21,22 @@ public class StrawberryEmployeeCommandServiceImpl implements StrawberryEmployeeC
   }
 
   @Override
-  public CompletableFuture<String> createEmployee(AddStrawberryEmployeeCommand addStrawberryEmployeeCommand) {
-    return commandGateway.send(addStrawberryEmployeeCommand);
+  public Mono<String> createEmployee(AddStrawberryEmployeeCommand addStrawberryEmployeeCommand) {
+    return Mono.fromFuture(commandGateway.send(addStrawberryEmployeeCommand));
   }
 
   @Override
-  public CompletableFuture<String> amendEmployee(AmendStrawberryEmployeeCommand amendStrawberryEmployeeCommand) {
-    return commandGateway.send(amendStrawberryEmployeeCommand);
+  public Mono<String> amendEmployee(AmendStrawberryEmployeeCommand amendStrawberryEmployeeCommand) {
+    return Mono.fromFuture(commandGateway.send(amendStrawberryEmployeeCommand));
   }
 
   @Override
-  public CompletableFuture<String> amendEmployeeNote(AmendStrawberryEmployeeNoteCommand amendStrawberryEmployeeNoteCommand) {
-    return commandGateway.send(amendStrawberryEmployeeNoteCommand);
+  public Mono<String> amendEmployeeNote(AmendStrawberryEmployeeNoteCommand amendStrawberryEmployeeNoteCommand) {
+    return Mono.fromFuture(commandGateway.send(amendStrawberryEmployeeNoteCommand));
   }
 
   @Override
-  public CompletableFuture<String> amendEmployeeRole(AmendStrawberryEmployeeRoleCommand amendStrawberryEmployeeRoleCommand) {
-    return commandGateway.send(amendStrawberryEmployeeRoleCommand);
+  public Mono<String> amendEmployeeRole(AmendStrawberryEmployeeRoleCommand amendStrawberryEmployeeRoleCommand) {
+    return Mono.fromFuture(commandGateway.send(amendStrawberryEmployeeRoleCommand));
   }
 }

@@ -11,3 +11,5 @@ include 'msp-common:cqrs'
 include 'msp-common:property'
 include 'msp-common:statestore'
 include 'msp-common:validation'
+
+include 'strawberry-rest-api'
