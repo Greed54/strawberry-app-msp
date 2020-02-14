@@ -225,6 +225,7 @@ project(":strawberry-core") {
 
         dependencies {
             compile project(":msp-common:property")
+            compile project(":msp-common:statestore")
 
             compileOnly("org.immutables:value:${immutablesVersion}")
             compileOnly("org.immutables:annotate:${immutablesVersion}")
@@ -389,7 +390,6 @@ project(":strawberry-read") {
         apply plugin: 'org.springframework.boot'
         apply plugin: "jacoco"
         apply plugin: "org.sonarqube"
-        apply plugin: 'com.apollographql.android'
 
         project.tasks["jacocoTestReport"].dependsOn "integrationTest"
         project.tasks["sonarqube"].dependsOn "jacocoTestReport"
@@ -431,6 +431,7 @@ project(":strawberry-read") {
         dependencies {
             compile project(":strawberry-core:api")
             compile project(":strawberry-read:api")
+            compile project(":msp-common:statestore")
 
             /* Spring */
             compile('org.springframework.boot:spring-boot-starter')
@@ -440,9 +441,12 @@ project(":strawberry-read") {
             compile("com.apollographql.apollo:apollo-runtime:${apolloVersion}")
             compile("com.squareup.okhttp3:okhttp:4.2.2")
 
+            compile "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
             compile "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
             compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+            compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
             /* Test */
+            testCompile('org.springframework.boot:spring-boot-starter-test')
             testCompile "org.assertj:assertj-core:${assertjVersion}"
             testCompile("org.axonframework:axon-test:${axonVersion}")
             testCompile("com.squareup.okhttp3:mockwebserver:4.2.2")

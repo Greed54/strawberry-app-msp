@@ -13,7 +13,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Getter
 @Setter
 @Builder
-@ConfigurationProperties(prefix = "default")
+@ConfigurationProperties(prefix = "msp-strawberry-core")
 public class StrawberryCoreApplicationProperties {
 
   @Value("${stateDir}")

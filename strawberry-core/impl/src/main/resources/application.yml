@@ -1,1 +1,2 @@
-stateDir: persistence
+msp-strawberry-core:
+  state-dir: persistence/core

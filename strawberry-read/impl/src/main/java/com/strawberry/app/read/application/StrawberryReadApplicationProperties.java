@@ -14,4 +14,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class StrawberryReadApplicationProperties {
 
   private String prismaUrl;
+
+  private String stateDir;
 }

@@ -1,29 +1,13 @@
-mutation CreateEmployee($data: EmployeeCreateInput!){
-    createEmployee(data: $data) {
-        id
-        cardId
+mutation CreateSEmployee($data: SEmployeeCreateInput!){
+    createSEmployee(data: $data) {
+        coreID
         firstName
-        lastName
         employeeRole
-        note
-        createdBy
-        _createdAt
-        modifiedBy
-        modifiedAt
     }
 }
 
-mutation UpdateEmployee($data: EmployeeUpdateInput!, $where: EmployeeWhereUniqueInput!) {
-    updateEmployee(data: $data, where: $where) {
+mutation UpdateSEmployee($data: SEmployeeUpdateInput!, $where: SEmployeeWhereUniqueInput!) {
+    updateSEmployee(data: $data, where: $where) {
         coreID
-        cardId
-        firstName
-        lastName
-        employeeRole
-        note
-        createdBy
-        _createdAt
-        modifiedBy
-        modifiedAt
     }
 }

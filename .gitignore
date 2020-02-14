@@ -26,3 +26,4 @@
 /msp-common/statestore/build/
 /msp-common/validation/build/
 /strawberry-rest-api/build/
+/persistence/
