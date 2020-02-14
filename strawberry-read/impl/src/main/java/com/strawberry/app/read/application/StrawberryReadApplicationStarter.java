@@ -1,22 +1,23 @@
-package com.strawberry.app.core.application;
+package com.strawberry.app.read.application;
 
+import com.apollographql.apollo.ApolloClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.strawberry.app.core.application.store.StoreBuilder;
-import com.strawberry.app.common.behavior.Behavior;
-import com.strawberry.app.common.behavior.DefaultBehaviorEngine;
 import com.strawberry.app.common.cqengine.RepositoryFactory;
 import com.strawberry.app.common.cqengine.indexedstore.IndexedStoreImpl;
-import com.strawberry.app.core.context.utils.service.RepositoryService;
+import com.strawberry.app.read.application.store.ExternalProjectionStoreBuilder;
+import com.strawberry.app.read.context.utils.RepositoryService;
 import java.util.List;
 import java.util.stream.Collectors;
+import okhttp3.OkHttpClient;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 @Component
-@EnableConfigurationProperties(StrawberryCoreApplicationProperties.class)
-public class StrawberryCoreApplicationStarter {
+@EnableConfigurationProperties(StrawberryReadApplicationProperties.class)
+public class StrawberryReadApplicationStarter {
 
   @Bean
   public RepositoryService repositoryService(RepositoryFactory repositoryFactory) {
@@ -29,17 +30,10 @@ public class StrawberryCoreApplicationStarter {
   }
 
   @Bean
-  public DefaultBehaviorEngine defaultBehaviorEngine(RepositoryFactory repositoryFactory, List<Behavior> behaviors) {
-    return new DefaultBehaviorEngine(repositoryFactory, behaviors);
-  }
-
-  @Bean
-  public List<IndexedStoreImpl> indexedStores(ObjectMapper objectMapper, StrawberryCoreApplicationProperties applicationProperties) {
-    StoreBuilder storeBuilder = new StoreBuilder();
-
+  public List<IndexedStoreImpl> indexedStores(ObjectMapper objectMapper, StrawberryReadApplicationProperties applicationProperties) {
     return List.of(
-        storeBuilder.buildStrawberryEmployeeStore(),
-        storeBuilder.buildStrawberryTeamStore()
+        ExternalProjectionStoreBuilder.buildStrawberryEmployeeProjectionStore(),
+        ExternalProjectionStoreBuilder.buildStrawberryTeamProjectionStore()
     )
         .stream()
         .peek(indexedStore -> indexedStore.init(applicationProperties.getStateDir(), objectMapper))
@@ -47,9 +41,20 @@ public class StrawberryCoreApplicationStarter {
   }
 
   @Bean
+  public ApolloClient apolloClient(StrawberryReadApplicationProperties applicationProperties) {
+    OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
+    return ApolloClient.builder()
+        .serverUrl(applicationProperties.getPrismaUrl())
+        .okHttpClient(okHttpClient)
+        .build();
+  }
+
+  @Primary
+  @Bean
   public ObjectMapper objectMapper() {
     return new ObjectMapper()
         .findAndRegisterModules()
         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
   }
+
 }

@@ -6,7 +6,7 @@ type SEmployee {
     lastName: String
     employeeRole: String
     note: String
-    team: STeam
+    team: STeam @relation(name: "TeamEmployeeRelation")
     createdBy: String
     _createdAt: DateTime
     modifiedBy: String
@@ -18,7 +18,8 @@ type STeam {
     id: ID! @id
     coreID: String @unique
     teamName: String
-    teamLead: String
+    teamLead: SEmployee @relation(name: "TeamLeadEmployeeRelation")
+    employees: [SEmployee!]! @relation(name: "TeamEmployeeRelation")
     createdBy: String
     _createdAt: DateTime
     modifiedBy: String

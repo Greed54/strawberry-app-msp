@@ -1,0 +1,15 @@
+mutation CreateSTeam($data: STeamCreateInput!) {
+    createSTeam(data: $data) {
+        coreID
+        teamName
+        teamLead{
+            coreID
+        }
+    }
+}
+
+mutation UpdateSTeam($data: STeamUpdateInput!, $where: STeamWhereUniqueInput!) {
+    updateSTeam(data: $data, where: $where) {
+        coreID
+    }
+}
