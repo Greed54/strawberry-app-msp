@@ -20,3 +20,9 @@
 /strawberry-core/impl/build/
 /strawberry-read/impl/build/
 /strawberry-read/api/build/
+/msp-common/behavior/build/
+/msp-common/cqrs/build/
+/msp-common/property/build/
+/msp-common/statestore/build/
+/msp-common/validation/build/
+/strawberry-rest-api/build/
