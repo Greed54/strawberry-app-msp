@@ -24,7 +24,7 @@ public class StateSerdes<K, V> {
     try {
       rawKey = objectMapper.writeValueAsBytes(key);
     } catch (JsonProcessingException e) {
-      LOGGER.error("Cannot be serialize key {} in bytes", key);
+      LOGGER.error("Cannot be serialize key {} in bytes. {}", key, e.getStackTrace());
     }
     return rawKey;
   }
@@ -34,7 +34,7 @@ public class StateSerdes<K, V> {
     try {
       rawValue = objectMapper.writeValueAsBytes(value);
     } catch (JsonProcessingException e) {
-      LOGGER.error("Cannot be serialize value {} in bytes", value);
+      LOGGER.error("Cannot be serialize value {} in bytes. {}", value, e.getStackTrace());
     }
     return rawValue;
   }
@@ -45,7 +45,7 @@ public class StateSerdes<K, V> {
       try {
         key = objectMapper.readValue(rawKey, kClass);
       } catch (IOException e) {
-        LOGGER.error("Cannot be deserialize key class {} from bytes", kClass);
+        LOGGER.error("Cannot be deserialize key class {} from bytes. {}", kClass, e.getStackTrace());
       }
     }
     return key;
@@ -57,7 +57,7 @@ public class StateSerdes<K, V> {
       try {
         value = objectMapper.readValue(rawValue, vClass);
       } catch (IOException e) {
-        LOGGER.error("Cannot be deserialize value class {} from bytes", vClass);
+        LOGGER.error("Cannot be deserialize value class {} from bytes. {}", vClass, e.getStackTrace());
       }
     }
     return value;

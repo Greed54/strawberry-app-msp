@@ -26,7 +26,7 @@ public interface IStrawberryTeam extends State<StrawberryTeamId>, HasStrawberryT
         StrawberryTeam.class, StrawberryTeamId.class, "identity", StrawberryTeam::identity);
   }
 
-  Set<ProjectionIndex<StrawberryTeam>> INDICES = ImmutableSet.of(
+  ImmutableSet<ProjectionIndex<StrawberryTeam>> INDICES = ImmutableSet.of(
       ProjectionIndex.hash(Attributes.TEAM_ID)
   );
 }
