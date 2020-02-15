@@ -2,11 +2,12 @@ package com.strawberry.app.core.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.strawberry.app.core.application.store.StoreBuilder;
+import com.strawberry.app.common.aggregate.IAggregate;
 import com.strawberry.app.common.behavior.Behavior;
 import com.strawberry.app.common.behavior.DefaultBehaviorEngine;
 import com.strawberry.app.common.cqengine.RepositoryFactory;
 import com.strawberry.app.common.cqengine.indexedstore.IndexedStoreImpl;
+import com.strawberry.app.core.application.store.InternalStoreBuilder;
 import com.strawberry.app.core.context.utils.service.RepositoryService;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,13 +35,9 @@ public class StrawberryCoreApplicationStarter {
   }
 
   @Bean
-  public List<IndexedStoreImpl> indexedStores(ObjectMapper objectMapper, StrawberryCoreApplicationProperties applicationProperties) {
-    StoreBuilder storeBuilder = new StoreBuilder();
-
-    return List.of(
-        storeBuilder.buildStrawberryEmployeeStore(),
-        storeBuilder.buildStrawberryTeamStore()
-    )
+  public List<IndexedStoreImpl> indexedStores(List<IAggregate> aggregates, ObjectMapper objectMapper,
+      StrawberryCoreApplicationProperties applicationProperties) {
+    return InternalStoreBuilder.buildStateStores(aggregates)
         .stream()
         .peek(indexedStore -> indexedStore.init(applicationProperties.getStateDir(), objectMapper))
         .collect(Collectors.toList());

@@ -2,8 +2,11 @@ package com.strawberry.app.core.context.team.aggregate;
 
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
 
+import com.google.common.collect.ImmutableSet;
+import com.strawberry.app.common.aggregate.IAggregate;
 import com.strawberry.app.common.behavior.Behavior;
 import com.strawberry.app.common.behavior.DefaultBehaviorEngine;
+import com.strawberry.app.common.cqengine.ProjectionIndex;
 import com.strawberry.app.core.context.team.StrawberryTeam;
 import com.strawberry.app.core.context.team.command.AddStrawberryTeamCommand;
 import com.strawberry.app.core.context.team.command.AmendStrawberryTeamCommand;
@@ -26,7 +29,7 @@ import org.axonframework.spring.stereotype.Aggregate;
 
 @Aggregate
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class StrawberryTeamAggregate {
+public class StrawberryTeamAggregate implements IAggregate<StrawberryTeamId, StrawberryTeamCommand, StrawberryTeamEvent, StrawberryTeam> {
 
   @AggregateIdentifier
   StrawberryTeamId identity;
@@ -52,18 +55,39 @@ public class StrawberryTeamAggregate {
     behavior.commandToEvents(command, teamService.getStrawberryTeam(command.identity())).forEach(AggregateLifecycle::apply);
   }
 
+  @Override
   @EventHandler
-  public void on(StrawberryTeamEvent event, DefaultBehaviorEngine defaultBehaviorEngine) {
-    if (!(event instanceof StrawberryTeamFailedEvent)) {
-      Behavior<StrawberryTeamId, StrawberryTeamEvent, StrawberryTeamCommand, StrawberryTeam> behavior = defaultBehaviorEngine
-          .getBehavior(event.getClass());
-      this.identity = event.identity();
-      this.team = behavior.eventToState(event, Optional.ofNullable(team));
-      defaultBehaviorEngine.project(team);
+  public void handleEvent(StrawberryTeamEvent businessEvent, DefaultBehaviorEngine behaviorEngine) {
+    if (!(businessEvent instanceof StrawberryTeamFailedEvent)) {
+      Behavior<StrawberryTeamId, StrawberryTeamEvent, StrawberryTeamCommand, StrawberryTeam> behavior = behaviorEngine
+          .getBehavior(businessEvent.getClass());
+      this.identity = businessEvent.identity();
+      this.team = behavior.eventToState(businessEvent, Optional.ofNullable(team));
 
-      apply(StrawberryTeamProjectionEvent.builder()
-          .from((HasStrawberryTeamId) team)
-          .build());
+      projectState(team, behaviorEngine);
+      publishProjectionEvent(team);
     }
+  }
+
+  @Override
+  public Class<StrawberryTeamId> identityClass() {
+    return StrawberryTeamId.class;
+  }
+
+  @Override
+  public Class<StrawberryTeam> stateClass() {
+    return StrawberryTeam.class;
+  }
+
+  @Override
+  public ImmutableSet<ProjectionIndex<StrawberryTeam>> indices() {
+    return StrawberryTeam.INDICES;
+  }
+
+  @Override
+  public void publishProjectionEvent(StrawberryTeam state) {
+    apply(StrawberryTeamProjectionEvent.builder()
+        .from((HasStrawberryTeamId) team)
+        .build());
   }
 }

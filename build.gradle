@@ -314,6 +314,7 @@ project(":strawberry-core") {
             compile "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
             compile "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
             compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+            compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
             /* Test */
             testCompile('org.springframework.boot:spring-boot-starter-test')
@@ -454,6 +455,77 @@ project(":strawberry-read") {
     }
 }
 
+project(":strawberry-rest-api") {
+    apply plugin: 'org.springframework.boot'
+    apply plugin: "jacoco"
+    apply plugin: "org.sonarqube"
+
+    description = "Strawberry rest api service."
+
+    project.tasks["jacocoTestReport"].dependsOn "integrationTest"
+    project.tasks["sonarqube"].dependsOn "jacocoTestReport"
+
+    jacocoTestReport {
+        reports {
+            xml.enabled false
+            csv.enabled false
+            html.destination file("${buildDir}/reports/jacoco")
+        }
+        executionData(test)
+    }
+
+    sonarqube {
+        properties {
+            property "sonar.projectKey", "strawberry-rest-api"
+            property "sonar.projectName", "strawberrry-rest-api-develop"
+            property "sonar.jacoco.reportPaths", "${buildDir}/jacoco/integrationTest.exec"
+        }
+    }
+
+    def generatedImplSources = "${project.buildDir}/generated"
+
+    idea {
+        module {
+            sourceDirs += file(generatedImplSources)
+            inheritOutputDirs = false
+            outputDir = compileJava.destinationDir
+        }
+    }
+
+    compileJava {
+        options.compilerArgs += ["-s", generatedImplSources]
+        doFirst {
+            mkdir generatedImplSources
+        }
+    }
+
+    dependencies {
+        compile project(":strawberry-core:api")
+        /* Spring */
+        compile 'org.springframework.boot:spring-boot-starter-webflux'
+        compile 'org.springframework.boot:spring-boot-starter-tomcat'
+        compile('org.springframework.boot:spring-boot-configuration-processor')
+        compile("org.axonframework:axon-spring-boot-starter:${axonVersion}")
+
+        compile("io.springfox:springfox-swagger2:2.9.2")
+        compile("io.springfox:springfox-swagger-ui:2.9.2")
+
+        /* Other */
+        compile("org.immutables:value:${immutablesVersion}")
+        compileOnly("org.immutables:annotate:${immutablesVersion}")
+        annotationProcessor "org.immutables:value:${immutablesVersion}"
+        compile "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
+        compile "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
+        compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+
+        testCompile('io.projectreactor:reactor-test')
+        testCompile('org.springframework.boot:spring-boot-starter-test')
+        testCompile "org.mockito:mockito-core:${mockitoVersion}"
+        testCompile('com.squareup.okhttp3:mockwebserver:4.0.1')
+        testCompile('com.squareup.okhttp3:okhttp:4.0.1')
+    }
+}
+
 project(":msp-common") {
 
     project(":msp-common:validation") {
@@ -566,7 +638,6 @@ project(":msp-common") {
 
         dependencies {
 
-            compile project(":msp-common:property")
             compile project(":msp-common:statestore")
         }
 
@@ -597,11 +668,11 @@ project(":msp-common") {
         description = "Statestore lib"
 
         dependencies {
-
+            compile project(":msp-common:cqrs")
+            compile('org.springframework.boot:spring-boot-starter')
             compile ("org.rocksdb:rocksdbjni:6.5.3")
             compile ("com.googlecode.cqengine:cqengine:3.4.0")
-            compile('org.springframework.boot:spring-boot-starter')
-            compile project(":msp-common:property")
+            compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
         }
 
         publishing {
@@ -620,76 +691,5 @@ project(":msp-common") {
             }
         }
 
-    }
-}
-
-project(":strawberry-rest-api") {
-    apply plugin: 'org.springframework.boot'
-    apply plugin: "jacoco"
-    apply plugin: "org.sonarqube"
-
-    description = "Strawberry rest api service."
-
-    project.tasks["jacocoTestReport"].dependsOn "integrationTest"
-    project.tasks["sonarqube"].dependsOn "jacocoTestReport"
-
-    jacocoTestReport {
-        reports {
-            xml.enabled false
-            csv.enabled false
-            html.destination file("${buildDir}/reports/jacoco")
-        }
-        executionData(test)
-    }
-
-    sonarqube {
-        properties {
-            property "sonar.projectKey", "strawberry-rest-api"
-            property "sonar.projectName", "strawberrry-rest-api-develop"
-            property "sonar.jacoco.reportPaths", "${buildDir}/jacoco/integrationTest.exec"
-        }
-    }
-
-    def generatedImplSources = "${project.buildDir}/generated"
-
-    idea {
-        module {
-            sourceDirs += file(generatedImplSources)
-            inheritOutputDirs = false
-            outputDir = compileJava.destinationDir
-        }
-    }
-
-    compileJava {
-        options.compilerArgs += ["-s", generatedImplSources]
-        doFirst {
-            mkdir generatedImplSources
-        }
-    }
-
-    dependencies {
-        compile project(":strawberry-core:api")
-        /* Spring */
-        compile 'org.springframework.boot:spring-boot-starter-webflux'
-        compile 'org.springframework.boot:spring-boot-starter-tomcat'
-        compile('org.springframework.boot:spring-boot-configuration-processor')
-        compile("org.axonframework:axon-spring-boot-starter:${axonVersion}")
-
-        compile("io.springfox:springfox-swagger2:2.9.2")
-        compile("io.springfox:springfox-swagger-ui:2.9.2")
-
-        /* Other */
-        compile("org.immutables:value:${immutablesVersion}")
-        compileOnly("org.immutables:annotate:${immutablesVersion}")
-        annotationProcessor "org.immutables:value:${immutablesVersion}"
-        compile "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
-        compile "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
-        compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
-
-        testCompile('io.projectreactor:reactor-test')
-        testCompile('org.springframework.boot:spring-boot-starter-test')
-        testCompile "org.mockito:mockito-core:${mockitoVersion}"
-        testCompile('com.squareup.okhttp3:mockwebserver:4.0.1')
-        testCompile('com.squareup.okhttp3:okhttp:4.0.1')
     }
 }

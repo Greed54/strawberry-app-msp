@@ -2,8 +2,11 @@ package com.strawberry.app.core.context.employee.aggregate;
 
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
 
+import com.google.common.collect.ImmutableSet;
+import com.strawberry.app.common.aggregate.IAggregate;
 import com.strawberry.app.common.behavior.Behavior;
 import com.strawberry.app.common.behavior.DefaultBehaviorEngine;
+import com.strawberry.app.common.cqengine.ProjectionIndex;
 import com.strawberry.app.core.context.employee.StrawberryEmployee;
 import com.strawberry.app.core.context.employee.command.AddStrawberryEmployeeCommand;
 import com.strawberry.app.core.context.employee.command.AmendStrawberryEmployeeCommand;
@@ -27,7 +30,8 @@ import org.axonframework.spring.stereotype.Aggregate;
 
 @Aggregate
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class StrawberryEmployeeAggregate {
+public class StrawberryEmployeeAggregate implements
+    IAggregate<StrawberryEmployeeId, StrawberryEmployeeCommand, StrawberryEmployeeEvent, StrawberryEmployee> {
 
   @AggregateIdentifier
   StrawberryEmployeeId identity;
@@ -69,18 +73,39 @@ public class StrawberryEmployeeAggregate {
     behavior.commandToEvents(command, employeeService.getEmployee(command.identity())).forEach(AggregateLifecycle::apply);
   }
 
+  @Override
   @EventHandler
-  public void addStrawberryEmployee(StrawberryEmployeeEvent event, DefaultBehaviorEngine defaultBehaviorEngine) {
-    if (!(event instanceof StrawberryEmployeeFailedEvent)) {
-      Behavior<StrawberryEmployeeId, StrawberryEmployeeEvent, StrawberryEmployeeCommand, StrawberryEmployee> behavior = defaultBehaviorEngine
-          .getBehavior(event.getClass());
-      this.identity = event.identity();
-      this.employee = behavior.eventToState(event, Optional.ofNullable(employee));
-      defaultBehaviorEngine.project(employee);
+  public void handleEvent(StrawberryEmployeeEvent businessEvent, DefaultBehaviorEngine behaviorEngine) {
+    if (!(businessEvent instanceof StrawberryEmployeeFailedEvent)) {
+      Behavior<StrawberryEmployeeId, StrawberryEmployeeEvent, StrawberryEmployeeCommand, StrawberryEmployee> behavior = behaviorEngine
+          .getBehavior(businessEvent.getClass());
+      this.identity = businessEvent.identity();
+      this.employee = behavior.eventToState(businessEvent, Optional.ofNullable(employee));
 
-      apply(StrawberryEmployeeProjectionEvent.builder()
-          .from((HasStrawberryEmployeeId) employee)
-          .build());
+      projectState(employee, behaviorEngine);
+      publishProjectionEvent(employee);
     }
+  }
+
+  @Override
+  public Class<StrawberryEmployeeId> identityClass() {
+    return StrawberryEmployeeId.class;
+  }
+
+  @Override
+  public Class<StrawberryEmployee> stateClass() {
+    return StrawberryEmployee.class;
+  }
+
+  @Override
+  public ImmutableSet<ProjectionIndex<StrawberryEmployee>> indices() {
+    return StrawberryEmployee.INDICES;
+  }
+
+  @Override
+  public void publishProjectionEvent(StrawberryEmployee state) {
+    apply(StrawberryEmployeeProjectionEvent.builder()
+        .from((HasStrawberryEmployeeId) state)
+        .build());
   }
 }

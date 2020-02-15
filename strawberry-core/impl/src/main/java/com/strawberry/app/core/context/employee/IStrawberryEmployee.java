@@ -39,7 +39,7 @@ public interface IStrawberryEmployee extends State<StrawberryEmployeeId>, HasStr
         StrawberryEmployee::cardId);
   }
 
-  Set<ProjectionIndex<StrawberryEmployee>> INDICES = ImmutableSet.of(
+  ImmutableSet<ProjectionIndex<StrawberryEmployee>> INDICES = ImmutableSet.of(
       ProjectionIndex.hash(Attributes.EMPLOYEE_ID),
       ProjectionIndex.hash(Attributes.TEAM_ID),
       ProjectionIndex.hash(Attributes.EMPLOYEE_ROLE),
