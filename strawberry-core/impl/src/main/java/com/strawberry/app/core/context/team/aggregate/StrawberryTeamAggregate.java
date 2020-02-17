@@ -20,6 +20,7 @@ import com.strawberry.app.core.context.team.service.StrawberryTeamService;
 import java.util.Collection;
 import java.util.Optional;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventhandling.EventHandler;
@@ -32,8 +33,9 @@ import org.axonframework.spring.stereotype.Aggregate;
 public class StrawberryTeamAggregate implements IAggregate<StrawberryTeamId, StrawberryTeamCommand, StrawberryTeamEvent, StrawberryTeam> {
 
   @AggregateIdentifier
+  @Getter
   StrawberryTeamId identity;
-
+  @Getter
   StrawberryTeam team;
 
   public StrawberryTeamAggregate() {
@@ -66,6 +68,8 @@ public class StrawberryTeamAggregate implements IAggregate<StrawberryTeamId, Str
 
       projectState(team, behaviorEngine);
       publishProjectionEvent(team);
+    } else {
+      this.identity = businessEvent.identity();
     }
   }
 

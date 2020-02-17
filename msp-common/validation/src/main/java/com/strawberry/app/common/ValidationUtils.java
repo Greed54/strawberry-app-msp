@@ -207,13 +207,13 @@ public class ValidationUtils {
   public static <T extends Identity<?>, U, R> ValidationResult isPresent(BiFunction<T, U, Optional<R>> supplier, T identity, U valueClass) {
     return supplier.apply(identity, valueClass)
         .map(value -> (ValidationResult) generateValidationSuccess())
-        .orElseGet(() -> generateValidationFailure(identity.getClass().getSimpleName(), identity.value()));
+        .orElseGet(() -> generateValidationFailure("%s not present", identity));
   }
 
   public static <K extends Identity<?>, R> ValidationResult isPresent(Function<K, Optional<R>> supplier, K identity) {
     return supplier.apply(identity)
         .map(value -> (ValidationResult) generateValidationSuccess())
-        .orElseGet(() -> generateValidationFailure(identity.getClass().getSimpleName(), identity.value()));
+        .orElseGet(() -> generateValidationFailure("%s not present", identity));
   }
 
   /**

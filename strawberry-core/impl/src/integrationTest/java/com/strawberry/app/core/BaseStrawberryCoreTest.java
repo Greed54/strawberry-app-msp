@@ -1,5 +1,7 @@
 package com.strawberry.app.core;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import io.github.benas.randombeans.EnhancedRandomBuilder;
 import io.github.benas.randombeans.FieldDefinitionBuilder;
 import io.github.benas.randombeans.api.EnhancedRandom;
@@ -25,4 +27,10 @@ public abstract class BaseStrawberryCoreTest {
           (Supplier<String>) () -> UUID.randomUUID().toString())
       .collectionSizeRange(1, RandomUtils.nextInt(1, 10))
       .build();
+
+  protected static final String stateDir = "build/tmp/persistence";
+
+  protected final ObjectMapper objectMapper = new ObjectMapper()
+      .findAndRegisterModules()
+      .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 }
