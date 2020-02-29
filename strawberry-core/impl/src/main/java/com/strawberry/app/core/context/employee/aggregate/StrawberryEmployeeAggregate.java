@@ -21,6 +21,7 @@ import com.strawberry.app.core.context.employee.properties.HasStrawberryEmployee
 import com.strawberry.app.core.context.employee.service.StrawberryEmployeeService;
 import java.util.Optional;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventhandling.EventHandler;
@@ -34,8 +35,10 @@ public class StrawberryEmployeeAggregate implements
     IAggregate<StrawberryEmployeeId, StrawberryEmployeeCommand, StrawberryEmployeeEvent, StrawberryEmployee> {
 
   @AggregateIdentifier
+  @Getter
   StrawberryEmployeeId identity;
 
+  @Getter
   StrawberryEmployee employee;
 
   public StrawberryEmployeeAggregate() {
@@ -84,6 +87,8 @@ public class StrawberryEmployeeAggregate implements
 
       projectState(employee, behaviorEngine);
       publishProjectionEvent(employee);
+    } else {
+      this.identity = businessEvent.identity();
     }
   }
 
