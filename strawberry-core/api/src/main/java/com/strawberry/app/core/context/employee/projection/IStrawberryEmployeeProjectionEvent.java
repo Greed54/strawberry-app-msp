@@ -37,10 +37,8 @@ public interface IStrawberryEmployeeProjectionEvent extends ProjectionEvent<Stra
   }
 
   class Attributes {
-
     public static AbstractAttribute<StrawberryEmployeeProjectionEvent, StrawberryEmployeeId> EMPLOYEE_ID = attribute(
         StrawberryEmployeeProjectionEvent.class, StrawberryEmployeeId.class, "identity", StrawberryEmployeeProjectionEvent::identity);
-
   }
 
   Set<ProjectionIndex<StrawberryEmployeeProjectionEvent>> INDICES = ImmutableSet.of(

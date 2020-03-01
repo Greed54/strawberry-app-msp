@@ -31,13 +31,12 @@ type SWorkDay {
     id: ID! @id
     coreID: String @unique
     date: DateTime
-    boxes: Int
-    kilograms: Float
-    allSalarys: Float
+    #boxes: Int #calculated
+    #kilograms: Float #calculated
+    #allSalarys: Float #calculated
     teams: [STeam!]!
     pricePerKilo: Float
     tareWeight: Float
-    createdBy: String
     _createdAt: DateTime
     modifiedBy: String
     modifiedAt: DateTime

@@ -8,6 +8,9 @@ import com.strawberry.app.core.context.employee.projection.StrawberryEmployeePro
 import com.strawberry.app.core.context.team.identities.StrawberryTeamId;
 import com.strawberry.app.core.context.team.projection.IStrawberryTeamProjectionEvent;
 import com.strawberry.app.core.context.team.projection.StrawberryTeamProjectionEvent;
+import com.strawberry.app.core.context.workday.identities.StrawberryWorkDayId;
+import com.strawberry.app.core.context.workday.projection.IStrawberryWorkDayProjectionEvent;
+import com.strawberry.app.core.context.workday.projection.StrawberryWorkDayProjectionEvent;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
@@ -34,5 +37,16 @@ public class ExternalProjectionStoreBuilder {
         .build();
 
     return (IndexedStoreImpl<StrawberryTeamId, StrawberryTeamProjectionEvent>) builder.build();
+  }
+
+  public static IndexedStoreImpl<StrawberryWorkDayId, StrawberryWorkDayProjectionEvent> buildStrawberryWorkDayProjectionStore() {
+    IndexedProjectionStoreBuilder<StrawberryWorkDayId, StrawberryWorkDayProjectionEvent> builder = IndexedProjectionStoreBuilder.<StrawberryWorkDayId, StrawberryWorkDayProjectionEvent>builder()
+        .name(StrawberryWorkDayProjectionEvent.class.getName())
+        .eventStream(IStrawberryWorkDayProjectionEvent.eventStream())
+        .indices(StrawberryWorkDayProjectionEvent.INDICES)
+        .identityGetter(StrawberryWorkDayProjectionEvent::identity)
+        .build();
+
+    return (IndexedStoreImpl<StrawberryWorkDayId, StrawberryWorkDayProjectionEvent>) builder.build();
   }
 }

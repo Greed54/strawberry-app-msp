@@ -33,7 +33,8 @@ public class StrawberryReadApplicationStarter {
   public List<IndexedStoreImpl> indexedStores(ObjectMapper objectMapper, StrawberryReadApplicationProperties applicationProperties) {
     return List.of(
         ExternalProjectionStoreBuilder.buildStrawberryEmployeeProjectionStore(),
-        ExternalProjectionStoreBuilder.buildStrawberryTeamProjectionStore()
+        ExternalProjectionStoreBuilder.buildStrawberryTeamProjectionStore(),
+        ExternalProjectionStoreBuilder.buildStrawberryWorkDayProjectionStore()
     )
         .stream()
         .peek(indexedStore -> indexedStore.init(applicationProperties.getStateDir(), objectMapper))
