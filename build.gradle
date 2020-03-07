@@ -12,11 +12,13 @@ buildscript {
         maven { url "https://repo.spring.io/snapshot" }
         maven { url "https://repo.spring.io/milestone" }
         maven { url "https://plugins.gradle.org/m2/" }
+        maven { url 'http://oss.jfrog.org/artifactory/oss-snapshot-local/' }
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath("org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:${sonarcubeGradleVersion}")
         classpath("com.apollographql.apollo:apollo-gradle-plugin:${apolloVersion}")
+        classpath "gradle.plugin.com.google.cloud.tools:jib-gradle-plugin:2.1.0"
     }
 }
 
@@ -30,6 +32,7 @@ configure(subprojects) { subproject ->
     apply plugin: "idea"
     apply plugin: "checkstyle"
     apply plugin: 'io.spring.dependency-management'
+    apply plugin: "com.google.cloud.tools.jib"
 
     ext {
         lombokVersion = '1.18.10'
@@ -57,6 +60,8 @@ configure(subprojects) { subproject ->
         maven { url 'http://packages.confluent.io/maven/' }
         maven { url "https://repo.spring.io/milestone" }
         maven { url "https://repo.spring.io/snapshot" }
+        maven { url 'http://oss.jfrog.org/artifactory/oss-snapshot-local/' }
+
     }
 
     jacoco {
@@ -296,6 +301,10 @@ project(":strawberry-core") {
             }
         }
 
+        jib {
+            container.mainClass = "com.strawberry.app.core.StrawberryCoreApplication"
+        }
+
         dependencies {
 
             compile project(":strawberry-core:api")
@@ -507,8 +516,9 @@ project(":strawberry-rest-api") {
         compile('org.springframework.boot:spring-boot-configuration-processor')
         compile("org.axonframework:axon-spring-boot-starter:${axonVersion}")
 
-        compile("io.springfox:springfox-swagger2:2.9.2")
-        compile("io.springfox:springfox-swagger-ui:2.9.2")
+        compile ("io.springfox:springfox-swagger2:3.0.0-SNAPSHOT")
+        compile ("io.springfox:springfox-swagger-ui:3.0.0-SNAPSHOT")
+        compile ("io.springfox:springfox-spring-webflux:3.0.0-SNAPSHOT")
 
         /* Other */
         compile("org.immutables:value:${immutablesVersion}")

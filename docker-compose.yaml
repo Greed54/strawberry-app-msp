@@ -1,0 +1,63 @@
+version: '3'
+
+services:
+  strawberry-core-container:
+    image: strawberry-core:1
+    build:
+      context: ./strawberry-core/impl/
+      dockerfile: Dockerfile
+    environment:
+      - AXON_AXONSERVER_SERVERS=axon-server
+      - SERVER_PORT=8081
+    ports:
+      - 8081:8081
+    deploy:
+      replicas: 1
+    volumes:
+      - /data/stawberry-core
+  strawberry-read-container:
+    image: strawberry-read:1
+    build:
+      context: ./strawberry-read/impl/
+      dockerfile: Dockerfile
+    environment:
+      - AXON_AXONSERVER_SERVERS=axon-server
+      - SERVER_PORT=8082
+    ports:
+      - 8082:8082
+    deploy:
+      replicas: 1
+    volumes:
+      - /data/stawberry-read
+  strawberry-rest-api-container:
+    image: strawberry-rest-api:1
+    build:
+      context: ./strawberry-rest-api/src
+      dockerfile: Dockerfile
+    environment:
+      - AXON_AXONSERVER_SERVERS=axon-server
+      - SERVER_PORT=8083
+    ports:
+      - 8083:8083
+    deploy:
+      replicas: 1
+    volumes:
+      - /data/stawberry-rest-api
+  axon-server:
+    image: axoniq/axonserver
+    hostname: axon-server
+    environment:
+      - AXONSERVER_EVENTSTORE=/eventstore
+      - AXONSERVER_CONTROLDB=/controldb
+    volumes:
+      - axonserver-eventstore:/eventstore
+      - axonserver-controldb:/controldb
+    ports:
+      - '8024:8024'
+      - '8124:8124'
+    deploy:
+      replicas: 1
+volumes:
+  axonserver-eventstore:
+  axonserver-controldb:
+  data:
