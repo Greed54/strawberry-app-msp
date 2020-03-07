@@ -5,9 +5,11 @@ import static com.strawberry.app.common.ValidationUtils.validateCollectionEmpty;
 
 import com.strawberry.app.common.context.ValidationResult;
 import com.strawberry.app.common.property.context.identity.card.CardId;
+import com.strawberry.app.core.context.employee.identities.StrawberryEmployeeId;
 import com.strawberry.app.core.context.employee.service.StrawberryEmployeeService;
 import com.strawberry.app.core.context.team.identities.StrawberryTeamId;
 import com.strawberry.app.core.context.team.service.StrawberryTeamService;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -27,6 +29,14 @@ public class StrawberryEmployeeValidator {
 
   public ValidationResult validateTeamLeadIsExist(StrawberryTeamId teamId) {
     return validateCollectionEmpty(strawberryEmployeeService.getTeamLeadEmployeeByTeam(teamId), "Team lead is exist or ");
+  }
+
+  public ValidationResult validateCardIdIsExist(CardId cardId, StrawberryEmployeeId employeeId) {
+    return validateCollectionEmpty(
+        strawberryEmployeeService.getEmployeesByCardId(cardId)
+            .stream()
+            .filter(employee -> !employee.identity().equals(employeeId))
+            .collect(Collectors.toSet()), "Card id is exist or ");
   }
 
   public ValidationResult validateCardIdIsExist(CardId cardId) {

@@ -35,8 +35,8 @@ public class AmendStrawberryEmployeeBehavior implements
         state, (AmendStrawberryEmployeeCommand) command)
         .present(StrawberryEmployee.class)
         .validate((amendStrawberryEmployeeCommand, strawberryEmployee) -> employeeValidator.validateTeam(amendStrawberryEmployeeCommand.teamId()))
-        .validate(
-            (amendStrawberryEmployeeCommand, strawberryEmployee) -> employeeValidator.validateCardIdIsExist(amendStrawberryEmployeeCommand.cardId()))
+        .validate((amendStrawberryEmployeeCommand, strawberryEmployee) -> employeeValidator
+            .validateCardIdIsExist(amendStrawberryEmployeeCommand.cardId(), strawberryEmployee.identity()))
         .success((amendStrawberryEmployeeCommand, strawberryEmployee) ->
             StrawberryEmployeeAmendedEvent.builder()
                 .from((HasStrawberryEmployeeId) amendStrawberryEmployeeCommand)

@@ -7,6 +7,7 @@ type SEmployee {
     employeeRole: String
     note: String
     team: STeam @relation(name: "TeamEmployeeRelation")
+    boxes: [SBox!]! @relation(name: "BoxEmployeeRelation")
     createdBy: String
     _createdAt: DateTime
     modifiedBy: String
@@ -46,12 +47,11 @@ type SWorkDay {
 type SBox {
     id: ID! @id
     coreID: String @unique
-    employee: SEmployee
+    employee: SEmployee @relation(name: "BoxEmployeeRelation")
     workDay: SWorkDay
     kilograms: Float
-    boxes: Int
-    weightNumber: Int
-    createdBy: String
+    boxAmount: Int
+    weightId: Int
     _createdAt: DateTime
     modifiedBy: String
     modifiedAt: DateTime

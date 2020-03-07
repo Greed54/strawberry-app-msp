@@ -2,6 +2,9 @@ package com.strawberry.app.read.application.store;
 
 import com.strawberry.app.common.cqengine.indexedstore.IndexedProjectionStoreBuilder;
 import com.strawberry.app.common.cqengine.indexedstore.IndexedStoreImpl;
+import com.strawberry.app.core.context.box.identities.StrawberryBoxId;
+import com.strawberry.app.core.context.box.projecton.IStrawberryBoxProjectionEvent;
+import com.strawberry.app.core.context.box.projecton.StrawberryBoxProjectionEvent;
 import com.strawberry.app.core.context.employee.identities.StrawberryEmployeeId;
 import com.strawberry.app.core.context.employee.projection.IStrawberryEmployeeProjectionEvent;
 import com.strawberry.app.core.context.employee.projection.StrawberryEmployeeProjectionEvent;
@@ -48,5 +51,16 @@ public class ExternalProjectionStoreBuilder {
         .build();
 
     return (IndexedStoreImpl<StrawberryWorkDayId, StrawberryWorkDayProjectionEvent>) builder.build();
+  }
+
+  public static IndexedStoreImpl<StrawberryBoxId, StrawberryBoxProjectionEvent> buildStrawberryBoxProjectionStore() {
+    IndexedProjectionStoreBuilder<StrawberryBoxId, StrawberryBoxProjectionEvent> builder = IndexedProjectionStoreBuilder.<StrawberryBoxId, StrawberryBoxProjectionEvent>builder()
+        .name(StrawberryBoxProjectionEvent.class.getName())
+        .eventStream(IStrawberryBoxProjectionEvent.eventStream())
+        .indices(StrawberryBoxProjectionEvent.INDICES)
+        .identityGetter(StrawberryBoxProjectionEvent::identity)
+        .build();
+
+    return (IndexedStoreImpl<StrawberryBoxId, StrawberryBoxProjectionEvent>) builder.build();
   }
 }

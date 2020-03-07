@@ -3,4 +3,4 @@ msp-strawberry-read:
   state-dir: persistence/read
 
 server:
-  port : 8081
+  port : 8082
