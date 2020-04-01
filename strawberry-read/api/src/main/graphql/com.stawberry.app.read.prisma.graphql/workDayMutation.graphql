@@ -1,0 +1,12 @@
+mutation CreateSWorkDay($data: SWorkDayCreateInput!){
+    createSWorkDay(data: $data) {
+        coreID
+        date
+    }
+}
+
+mutation UpdateSWorkDay($data: SWorkDayUpdateInput!, $where: SWorkDayWhereUniqueInput!) {
+    updateSWorkDay(data: $data, where: $where) {
+        coreID
+    }
+}
