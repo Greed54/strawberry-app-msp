@@ -31,6 +31,7 @@ public class PrismaMutationResolver {
     if (retrievedProjection.isPresent()) {
       LOGGER.debug("Projection {} with (identity={}) was found, resolved update mutation", projectionEvent.getClass().getSimpleName(),
           projectionEvent.identity());
+      repositoryService.saveProjection(projectionEvent.identity(), projectionEvent);
 
       return updateMutation;
     } else {

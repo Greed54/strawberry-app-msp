@@ -8,6 +8,7 @@ import com.strawberry.app.common.behavior.Behavior;
 import com.strawberry.app.common.behavior.DefaultBehaviorEngine;
 import com.strawberry.app.common.cqengine.ProjectionIndex;
 import com.strawberry.app.core.context.workday.StrawberryWorkDay;
+import com.strawberry.app.core.context.workday.command.AddStrawberryWorkDayTeamCommand;
 import com.strawberry.app.core.context.workday.command.AmendStrawberryWorkDayCommand;
 import com.strawberry.app.core.context.workday.command.StrawberryWorkDayCommand;
 import com.strawberry.app.core.context.workday.event.StrawberryWorkDayEvent;
@@ -21,12 +22,14 @@ import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 
+@Slf4j
 @Aggregate
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StrawberryWorkDayAggregate implements
@@ -47,6 +50,13 @@ public class StrawberryWorkDayAggregate implements
 
   @CommandHandler
   public void handleEx(AmendStrawberryWorkDayCommand command, DefaultBehaviorEngine defaultBehaviorEngine, StrawberryWorkDayService workDayService) {
+    Behavior<StrawberryWorkDayId, StrawberryWorkDayEvent, StrawberryWorkDayCommand, StrawberryWorkDay> behavior = defaultBehaviorEngine
+        .getBehavior(command.getClass());
+    behavior.commandToEvents(command, workDayService.getWorkDay(command.identity())).forEach(AggregateLifecycle::apply);
+  }
+
+  @CommandHandler
+  public void handleEx(AddStrawberryWorkDayTeamCommand command, DefaultBehaviorEngine defaultBehaviorEngine, StrawberryWorkDayService workDayService) {
     Behavior<StrawberryWorkDayId, StrawberryWorkDayEvent, StrawberryWorkDayCommand, StrawberryWorkDay> behavior = defaultBehaviorEngine
         .getBehavior(command.getClass());
     behavior.commandToEvents(command, workDayService.getWorkDay(command.identity())).forEach(AggregateLifecycle::apply);
@@ -86,8 +96,11 @@ public class StrawberryWorkDayAggregate implements
 
   @Override
   public void publishProjectionEvent(StrawberryWorkDay state) {
-    apply(StrawberryWorkDayProjectionEvent.builder()
+    StrawberryWorkDayProjectionEvent workDayProjectionEvent = StrawberryWorkDayProjectionEvent.builder()
         .from((HasStrawberryWorkDayId) state)
-        .build());
+        .build();
+    apply(workDayProjectionEvent);
+    log.info("Publish projection event{}(identity={}), value: {}", workDayProjectionEvent.getClass().getSimpleName(),
+        workDayProjectionEvent.identity(), workDayProjectionEvent);
   }
 }

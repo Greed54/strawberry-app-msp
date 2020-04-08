@@ -1,0 +1,11 @@
+mutation CreateSBox($data: SBoxCreateInput!){
+    createSBox(data: $data) {
+        coreID
+    }
+}
+
+mutation UpdateSBox($data: SBoxUpdateInput!, $where: SBoxWhereUniqueInput!) {
+    updateSBox(data: $data, where: $where) {
+        coreID
+    }
+}

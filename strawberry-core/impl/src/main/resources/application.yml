@@ -1,2 +1,9 @@
 msp-strawberry-core:
   state-dir: persistence/core
+
+spring:
+  application:
+    name: strawberry-core
+
+server:
+  port : 8081
