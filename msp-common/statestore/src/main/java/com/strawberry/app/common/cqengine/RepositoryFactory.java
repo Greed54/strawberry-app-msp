@@ -17,6 +17,4 @@ public class RepositoryFactory {
         .findFirst()
         .get();
   }
-
-
 }

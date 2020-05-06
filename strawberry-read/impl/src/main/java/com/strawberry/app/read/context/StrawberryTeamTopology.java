@@ -1,6 +1,9 @@
 package com.strawberry.app.read.context;
 
+import static com.strawberry.app.read.context.utils.TopologyNames.TEAM_TOPOLOGY_NAME;
+
 import com.apollographql.apollo.api.Mutation;
+import com.google.common.collect.ImmutableSet;
 import com.stawberry.app.read.prisma.graphql.CreateSTeamMutation;
 import com.stawberry.app.read.prisma.graphql.UpdateSTeamMutation;
 import com.stawberry.app.read.prisma.graphql.type.SEmployeeCreateInput;
@@ -10,7 +13,12 @@ import com.stawberry.app.read.prisma.graphql.type.SEmployeeWhereUniqueInput;
 import com.stawberry.app.read.prisma.graphql.type.STeamCreateInput;
 import com.stawberry.app.read.prisma.graphql.type.STeamUpdateInput;
 import com.stawberry.app.read.prisma.graphql.type.STeamWhereUniqueInput;
+import com.strawberry.app.common.cqengine.ProjectionIndex;
+import com.strawberry.app.common.projection.ProjectionEventStream;
 import com.strawberry.app.common.property.context.identity.BaseStringId;
+import com.strawberry.app.common.topology.AbstractTopology;
+import com.strawberry.app.core.context.team.identities.StrawberryTeamId;
+import com.strawberry.app.core.context.team.projection.IStrawberryTeamProjectionEvent;
 import com.strawberry.app.core.context.team.projection.StrawberryTeamProjectionEvent;
 import com.strawberry.app.read.apollo.PrismaClient;
 import com.strawberry.app.read.context.utils.PrismaMutationResolver;
@@ -19,24 +27,24 @@ import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.axonframework.config.ProcessingGroup;
 import org.axonframework.eventhandling.EventHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class StrawberryTeamTopology {
-
-  Logger LOGGER = LoggerFactory.getLogger(StrawberryTeamTopology.class);
+@ProcessingGroup(TEAM_TOPOLOGY_NAME)
+public class StrawberryTeamTopology implements AbstractTopology<StrawberryTeamId, StrawberryTeamProjectionEvent> {
 
   PrismaClient prismaClient;
   PrismaMutationResolver mutationResolver;
 
   @EventHandler
-  public void on(StrawberryTeamProjectionEvent projectionEvent) {
-    LOGGER.info("Projecting {}(identity={}), value: {}", projectionEvent.getClass().getSimpleName(), projectionEvent.identity(), projectionEvent);
+  public void process(StrawberryTeamProjectionEvent projectionEvent) {
+    log.info("Projecting {}(identity={}), value: {}", projectionEvent.getClass().getSimpleName(), projectionEvent.identity(), projectionEvent);
 
     CreateSTeamMutation createSTeamMutation = CreateSTeamMutation.builder()
         .data(STeamCreateInput.builder()
@@ -79,5 +87,20 @@ public class StrawberryTeamTopology {
 
     Mutation mutation = mutationResolver.resolveMutation(projectionEvent, createSTeamMutation, updateSTeamMutation);
     prismaClient.mutate(mutation);
+  }
+
+  @Override
+  public String topologyName() {
+    return TEAM_TOPOLOGY_NAME;
+  }
+
+  @Override
+  public ImmutableSet<ProjectionIndex<StrawberryTeamProjectionEvent>> indices() {
+    return IStrawberryTeamProjectionEvent.INDICES;
+  }
+
+  @Override
+  public ProjectionEventStream<StrawberryTeamId, StrawberryTeamProjectionEvent> eventStream() {
+    return IStrawberryTeamProjectionEvent.eventStream();
   }
 }

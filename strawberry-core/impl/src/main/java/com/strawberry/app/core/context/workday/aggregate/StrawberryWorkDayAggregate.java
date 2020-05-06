@@ -3,7 +3,7 @@ package com.strawberry.app.core.context.workday.aggregate;
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
 
 import com.google.common.collect.ImmutableSet;
-import com.strawberry.app.common.aggregate.IAggregate;
+import com.strawberry.app.common.aggregate.AbstractAggregate;
 import com.strawberry.app.common.behavior.Behavior;
 import com.strawberry.app.common.behavior.DefaultBehaviorEngine;
 import com.strawberry.app.common.cqengine.ProjectionIndex;
@@ -33,7 +33,7 @@ import org.axonframework.spring.stereotype.Aggregate;
 @Aggregate
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StrawberryWorkDayAggregate implements
-    IAggregate<StrawberryWorkDayId, StrawberryWorkDayCommand, StrawberryWorkDayEvent, StrawberryWorkDay> {
+    AbstractAggregate<StrawberryWorkDayId, StrawberryWorkDayCommand, StrawberryWorkDayEvent, StrawberryWorkDay> {
 
   @AggregateIdentifier
   @Getter

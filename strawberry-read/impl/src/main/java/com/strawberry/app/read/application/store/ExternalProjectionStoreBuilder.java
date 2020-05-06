@@ -2,6 +2,7 @@ package com.strawberry.app.read.application.store;
 
 import com.strawberry.app.common.cqengine.indexedstore.IndexedProjectionStoreBuilder;
 import com.strawberry.app.common.cqengine.indexedstore.IndexedStoreImpl;
+import com.strawberry.app.common.topology.AbstractTopology;
 import com.strawberry.app.core.context.box.identities.StrawberryBoxId;
 import com.strawberry.app.core.context.box.projecton.IStrawberryBoxProjectionEvent;
 import com.strawberry.app.core.context.box.projecton.StrawberryBoxProjectionEvent;
@@ -14,6 +15,8 @@ import com.strawberry.app.core.context.team.projection.StrawberryTeamProjectionE
 import com.strawberry.app.core.context.workday.identities.StrawberryWorkDayId;
 import com.strawberry.app.core.context.workday.projection.IStrawberryWorkDayProjectionEvent;
 import com.strawberry.app.core.context.workday.projection.StrawberryWorkDayProjectionEvent;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
@@ -62,5 +65,17 @@ public class ExternalProjectionStoreBuilder {
         .build();
 
     return (IndexedStoreImpl<StrawberryBoxId, StrawberryBoxProjectionEvent>) builder.build();
+  }
+
+  public static List<IndexedStoreImpl> buildProjectionStores(List<AbstractTopology> topologies) {
+    return topologies.stream()
+        .map(topology -> (IndexedStoreImpl) IndexedProjectionStoreBuilder.builder()
+            .name(topology.topologyName())
+            .eventStream(topology.eventStream())
+            .indices(topology.indices())
+            .identityGetter(topology.identityGetter())
+            .build()
+            .build())
+        .collect(Collectors.toList());
   }
 }

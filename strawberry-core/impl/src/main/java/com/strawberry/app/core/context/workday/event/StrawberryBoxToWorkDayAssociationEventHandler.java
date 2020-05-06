@@ -8,7 +8,6 @@ import com.strawberry.app.core.context.employee.service.StrawberryEmployeeServic
 import com.strawberry.app.core.context.team.StrawberryTeam;
 import com.strawberry.app.core.context.team.service.StrawberryTeamService;
 import com.strawberry.app.core.context.workday.StrawberryWorkDay;
-import com.strawberry.app.core.context.workday.aggregate.StrawberryWorkDayAggregate;
 import com.strawberry.app.core.context.workday.command.AddStrawberryWorkDayTeamCommand;
 import com.strawberry.app.core.context.workday.service.StrawberryWorkDayService;
 import java.time.Instant;
@@ -16,17 +15,13 @@ import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.axonframework.commandhandling.gateway.CommandGateway;
-import org.axonframework.eventhandling.EventBus;
 import org.axonframework.eventhandling.EventHandler;
-import org.axonframework.eventhandling.GenericDomainEventMessage;
-import org.axonframework.eventsourcing.eventstore.EventStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StrawberryBoxToWorkDayAssociationEventHandler {
 
   StrawberryWorkDayService workDayService;
@@ -56,7 +51,7 @@ public class StrawberryBoxToWorkDayAssociationEventHandler {
 
     Optional<StrawberryTeam> strawberryTeam = strawberryEmployeeService.getEmployee(employeeId).stream()
         .map(StrawberryEmployee::teamId)
-        .map(id -> strawberryTeamService.getTeamOrThrow(id))
+        .map(strawberryTeamService::getTeamOrThrow)
         .findFirst();
 
     strawberryTeam.ifPresent(team -> {

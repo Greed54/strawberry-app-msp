@@ -1,4 +1,4 @@
-rootProject.name = 'StrawberryApp'
+rootProject.name = 'strawberry-app-msp'
 
 include 'strawberry-core:api'
 include 'strawberry-core:impl'
@@ -6,6 +6,7 @@ include 'strawberry-core:impl'
 include 'strawberry-read:api'
 include 'strawberry-read:impl'
 
+include 'msp-common:application-starter'
 include 'msp-common:behavior'
 include 'msp-common:cqrs'
 include 'msp-common:property'

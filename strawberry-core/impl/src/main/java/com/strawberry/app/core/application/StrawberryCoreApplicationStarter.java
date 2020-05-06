@@ -2,7 +2,7 @@ package com.strawberry.app.core.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.strawberry.app.common.aggregate.IAggregate;
+import com.strawberry.app.common.aggregate.AbstractAggregate;
 import com.strawberry.app.common.behavior.Behavior;
 import com.strawberry.app.common.behavior.DefaultBehaviorEngine;
 import com.strawberry.app.common.cqengine.RepositoryFactory;
@@ -35,7 +35,7 @@ public class StrawberryCoreApplicationStarter {
   }
 
   @Bean
-  public List<IndexedStoreImpl> indexedStores(List<IAggregate> aggregates, ObjectMapper objectMapper,
+  public List<IndexedStoreImpl> indexedStores(List<AbstractAggregate> aggregates, ObjectMapper objectMapper,
       StrawberryCoreApplicationProperties applicationProperties) {
     return InternalStoreBuilder.buildStateStores(aggregates)
         .stream()

@@ -14,7 +14,6 @@ import com.strawberry.app.common.property.context.modified.HasOptionalModified;
 import com.strawberry.app.core.context.employee.identities.StrawberryEmployeeId;
 import com.strawberry.app.core.context.employee.properties.AllStrawberryEmployeeProps;
 import com.strawberry.app.core.context.employee.properties.HasStrawberryEmployeeId;
-import java.util.Set;
 import org.immutables.value.Value.Immutable;
 
 @Immutable
@@ -37,11 +36,12 @@ public interface IStrawberryEmployeeProjectionEvent extends ProjectionEvent<Stra
   }
 
   class Attributes {
+
     public static AbstractAttribute<StrawberryEmployeeProjectionEvent, StrawberryEmployeeId> EMPLOYEE_ID = attribute(
         StrawberryEmployeeProjectionEvent.class, StrawberryEmployeeId.class, "identity", StrawberryEmployeeProjectionEvent::identity);
   }
 
-  Set<ProjectionIndex<StrawberryEmployeeProjectionEvent>> INDICES = ImmutableSet.of(
+  ImmutableSet<ProjectionIndex<StrawberryEmployeeProjectionEvent>> INDICES = ImmutableSet.of(
       ProjectionIndex.hash(Attributes.EMPLOYEE_ID)
   );
 }

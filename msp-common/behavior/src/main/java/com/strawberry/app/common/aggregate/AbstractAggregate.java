@@ -9,7 +9,7 @@ import com.strawberry.app.common.event.BusinessEvent;
 import com.strawberry.app.common.projection.State;
 import java.util.function.Function;
 
-public interface IAggregate<I extends Identity<?>, C extends Command<I>, E extends BusinessEvent<I>, S extends State<I>> {
+public interface AbstractAggregate<I extends Identity<?>, C extends Command<I>, E extends BusinessEvent<I>, S extends State<I>> {
 
   void handleEvent(E businessEvent, DefaultBehaviorEngine behaviorEngine);
 

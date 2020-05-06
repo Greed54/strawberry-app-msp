@@ -39,8 +39,9 @@ configure(subprojects) { subproject ->
         mockitoVersion = '3.1.0'
         jacksonVersion = '2.10.0'
 
-        axonVersion = '4.2'
+        axonVersion = '4.3'
         apolloVersion = '1.2.1'
+        h2Version = '1.4.199'
     }
 
     dependencyManagement {
@@ -301,13 +302,16 @@ project(":strawberry-core") {
             compile project(":strawberry-core:api")
             compile project(":msp-common:behavior")
             compile project(":msp-common:validation")
+            compile project(":msp-common:application-starter")
 
             /* Spring */
             compile('org.springframework.boot:spring-boot-starter')
+            compile('org.springframework.boot:spring-boot-starter-data-jpa')
             compile('org.springframework.boot:spring-boot-configuration-processor')
             compile("org.axonframework:axon-spring-boot-starter:${axonVersion}")
 
             /* Other */
+            compile("com.h2database:h2:${h2Version}")
             compile("org.immutables:value:${immutablesVersion}")
             compileOnly("org.immutables:annotate:${immutablesVersion}")
             annotationProcessor "org.immutables:value:${immutablesVersion}"
@@ -432,15 +436,20 @@ project(":strawberry-read") {
         dependencies {
             compile project(":strawberry-core:api")
             compile project(":strawberry-read:api")
+            compile project(":msp-common:behavior")
             compile project(":msp-common:statestore")
+            compile project(":msp-common:application-starter")
 
             /* Spring */
             compile('org.springframework.boot:spring-boot-starter')
+            compile('org.springframework.boot:spring-boot-starter-data-jpa')
             compile('org.springframework.boot:spring-boot-configuration-processor')
             compile("org.axonframework:axon-spring-boot-starter:${axonVersion}")
 
             compile("com.apollographql.apollo:apollo-runtime:${apolloVersion}")
             compile("com.squareup.okhttp3:okhttp:4.2.2")
+
+            compile("com.h2database:h2:${h2Version}")
 
             compile "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
             compile "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
@@ -507,8 +516,7 @@ project(":strawberry-rest-api") {
         compile('org.springframework.boot:spring-boot-configuration-processor')
         compile("org.axonframework:axon-spring-boot-starter:${axonVersion}")
 
-        compile("io.springfox:springfox-swagger2:2.9.2")
-        compile("io.springfox:springfox-swagger-ui:2.9.2")
+        compile 'org.springdoc:springdoc-openapi-webflux-ui:1.3.0'
 
         /* Other */
         compile("org.immutables:value:${immutablesVersion}")
@@ -527,6 +535,37 @@ project(":strawberry-rest-api") {
 }
 
 project(":msp-common") {
+
+    project(":msp-common:application-starter") {
+
+        apply plugin: "maven-publish"
+
+        group = "com.strawbwerry.app.common"
+
+        description = "Application Starter lib"
+
+        dependencies {
+            compile('org.springframework.boot:spring-boot-starter')
+            compile("org.axonframework:axon-spring-boot-starter:${axonVersion}")
+        }
+
+        publishing {
+            publications {
+                mavenJava(MavenPublication) {
+                    artifactId 'application-starter'
+                    from components.java
+
+                    artifact sourcesJar
+                    artifact javadocJar
+                    artifact testJar
+                }
+            }
+            repositories {
+                mavenLocal()
+            }
+        }
+
+    }
 
     project(":msp-common:validation") {
 
