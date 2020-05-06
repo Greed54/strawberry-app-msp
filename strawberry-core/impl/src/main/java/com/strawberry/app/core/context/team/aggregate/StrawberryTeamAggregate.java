@@ -3,7 +3,7 @@ package com.strawberry.app.core.context.team.aggregate;
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
 
 import com.google.common.collect.ImmutableSet;
-import com.strawberry.app.common.aggregate.IAggregate;
+import com.strawberry.app.common.aggregate.AbstractAggregate;
 import com.strawberry.app.common.behavior.Behavior;
 import com.strawberry.app.common.behavior.DefaultBehaviorEngine;
 import com.strawberry.app.common.cqengine.ProjectionIndex;
@@ -23,6 +23,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import org.axonframework.commandhandling.CommandHandler;
+import org.axonframework.config.ProcessingGroup;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
@@ -30,7 +31,8 @@ import org.axonframework.spring.stereotype.Aggregate;
 
 @Aggregate
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class StrawberryTeamAggregate implements IAggregate<StrawberryTeamId, StrawberryTeamCommand, StrawberryTeamEvent, StrawberryTeam> {
+@ProcessingGroup("StrawberryTeamAggregate")
+public class StrawberryTeamAggregate implements AbstractAggregate<StrawberryTeamId, StrawberryTeamCommand, StrawberryTeamEvent, StrawberryTeam> {
 
   @AggregateIdentifier
   @Getter

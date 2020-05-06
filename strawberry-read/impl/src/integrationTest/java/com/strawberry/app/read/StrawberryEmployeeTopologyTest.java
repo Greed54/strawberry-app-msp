@@ -61,7 +61,7 @@ public class StrawberryEmployeeTopologyTest extends BaseStrawberryReadTest {
     server.enqueue(new MockResponse().setBody("done"));
     StrawberryEmployeeProjectionEvent employeeProjectionEvent = RANDOM.nextObject(StrawberryEmployeeProjectionEvent.class);
 
-    employeeTopology.on(employeeProjectionEvent);
+    employeeTopology.process(employeeProjectionEvent);
   }
 
   @Test
@@ -69,13 +69,13 @@ public class StrawberryEmployeeTopologyTest extends BaseStrawberryReadTest {
     server.enqueue(new MockResponse().setBody("done"));
     StrawberryEmployeeProjectionEvent employeeProjectionEvent = RANDOM.nextObject(StrawberryEmployeeProjectionEvent.class);
 
-    employeeTopology.on(employeeProjectionEvent);
+    employeeTopology.process(employeeProjectionEvent);
 
     server.enqueue(new MockResponse().setBody("done"));
     StrawberryEmployeeProjectionEvent employeeProjectionEvent2 = RANDOM.nextObject(StrawberryEmployeeProjectionEvent.class)
         .withIdentity(employeeProjectionEvent.identity());
 
-    employeeTopology.on(employeeProjectionEvent2);
+    employeeTopology.process(employeeProjectionEvent2);
   }
 
   @After

@@ -4,7 +4,7 @@ import static org.axonframework.modelling.command.AggregateLifecycle.apply;
 import static org.axonframework.modelling.command.AggregateLifecycle.createNew;
 
 import com.google.common.collect.ImmutableSet;
-import com.strawberry.app.common.aggregate.IAggregate;
+import com.strawberry.app.common.aggregate.AbstractAggregate;
 import com.strawberry.app.common.behavior.Behavior;
 import com.strawberry.app.common.behavior.DefaultBehaviorEngine;
 import com.strawberry.app.common.cqengine.ProjectionIndex;
@@ -32,13 +32,15 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import org.axonframework.commandhandling.CommandHandler;
+import org.axonframework.config.ProcessingGroup;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.spring.stereotype.Aggregate;
 
 @Aggregate
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class StrawberryBoxAggregate implements IAggregate<StrawberryBoxId, StrawberryBoxCommand, StrawberryBoxEvent, StrawberryBox> {
+@ProcessingGroup("StrawberryBoxAggregate")
+public class StrawberryBoxAggregate implements AbstractAggregate<StrawberryBoxId, StrawberryBoxCommand, StrawberryBoxEvent, StrawberryBox> {
 
   @AggregateIdentifier
   @Getter

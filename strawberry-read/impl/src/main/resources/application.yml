@@ -2,5 +2,19 @@ msp-strawberry-read:
   prisma-url: http://localhost:4466/
   state-dir: persistence/read
 
+spring:
+  application:
+    name: strawberry-read
+  datasource:
+    url: jdbc:h2:file:/Users/dmitrijusatenko/IdeaProjects/stawberry-app-msp/persistence/read/tokenstore;DB_CLOSE_ON_EXIT=FALSE;AUTO_SERVER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+
 server:
   port : 8082

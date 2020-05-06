@@ -1,0 +1,22 @@
+Configuration:
+  status: warn
+  monitorInterval: 30
+
+  appenders:
+    Console:
+      name: ConsoleAppender
+      PatternLayout:
+        Pattern: "%d{yyyy-MM-dd HH:mm:ss.SSS} | %-5p | %t | %c{1.} | %m%n"
+
+  Loggers:
+    logger:
+      - name: com.strawberry.app
+        level: debug
+        additivity: false
+        AppenderRef:
+          - ref: ConsoleAppender
+
+    Root:
+      level: info
+      AppenderRef:
+        ref: ConsoleAppender

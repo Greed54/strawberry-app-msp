@@ -1,6 +1,9 @@
 package com.strawberry.app.read.context;
 
+import static com.strawberry.app.read.context.utils.TopologyNames.EMPLOYEE_TOPOLOGY_NAME;
+
 import com.apollographql.apollo.api.Mutation;
+import com.google.common.collect.ImmutableSet;
 import com.stawberry.app.read.prisma.graphql.CreateSEmployeeMutation;
 import com.stawberry.app.read.prisma.graphql.UpdateSEmployeeMutation;
 import com.stawberry.app.read.prisma.graphql.type.SEmployeeCreateInput;
@@ -9,7 +12,12 @@ import com.stawberry.app.read.prisma.graphql.type.SEmployeeWhereUniqueInput;
 import com.stawberry.app.read.prisma.graphql.type.STeamCreateOneWithoutEmployeesInput;
 import com.stawberry.app.read.prisma.graphql.type.STeamUpdateOneWithoutEmployeesInput;
 import com.stawberry.app.read.prisma.graphql.type.STeamWhereUniqueInput;
+import com.strawberry.app.common.cqengine.ProjectionIndex;
+import com.strawberry.app.common.projection.ProjectionEventStream;
 import com.strawberry.app.common.property.context.identity.BaseStringId;
+import com.strawberry.app.common.topology.AbstractTopology;
+import com.strawberry.app.core.context.employee.identities.StrawberryEmployeeId;
+import com.strawberry.app.core.context.employee.projection.IStrawberryEmployeeProjectionEvent;
 import com.strawberry.app.core.context.employee.projection.StrawberryEmployeeProjectionEvent;
 import com.strawberry.app.read.apollo.PrismaClient;
 import com.strawberry.app.read.context.utils.PrismaMutationResolver;
@@ -18,24 +26,24 @@ import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.axonframework.config.ProcessingGroup;
 import org.axonframework.eventhandling.EventHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class StrawberryEmployeeTopology {
-
-  Logger LOGGER = LoggerFactory.getLogger(StrawberryEmployeeTopology.class);
+@ProcessingGroup(EMPLOYEE_TOPOLOGY_NAME)
+public class StrawberryEmployeeTopology implements AbstractTopology<StrawberryEmployeeId, StrawberryEmployeeProjectionEvent> {
 
   PrismaClient prismaClient;
   PrismaMutationResolver mutationResolver;
 
   @EventHandler
-  public void on(StrawberryEmployeeProjectionEvent projectionEvent) {
-    LOGGER.info("Projecting {}(identity={}), value: {}", projectionEvent.getClass().getSimpleName(), projectionEvent.identity(), projectionEvent);
+  public void process(StrawberryEmployeeProjectionEvent projectionEvent) {
+    log.info("Projecting {}(identity={}), value: {}", projectionEvent.getClass().getSimpleName(), projectionEvent.identity(), projectionEvent);
 
     CreateSEmployeeMutation createEmployeeMutation = CreateSEmployeeMutation.builder()
         .data(SEmployeeCreateInput.builder()
@@ -53,6 +61,7 @@ public class StrawberryEmployeeTopology {
                 .build())
             .createdBy(Optional.ofNullable(projectionEvent.createdBy()).map(BaseStringId::value).orElse(null))
             ._createdAt(projectionEvent.createdAt())
+            .removed(projectionEvent.removed())
             .build())
         .build();
 
@@ -70,6 +79,7 @@ public class StrawberryEmployeeTopology {
                 .build())
             .modifiedBy(Optional.ofNullable(projectionEvent.modifiedBy()).map(BaseStringId::value).orElse(null))
             .modifiedAt(projectionEvent.modifiedAt())
+            .removed(projectionEvent.removed())
             .build())
         .where(SEmployeeWhereUniqueInput.builder()
             .coreID(projectionEvent.identity().value())
@@ -78,5 +88,20 @@ public class StrawberryEmployeeTopology {
 
     Mutation mutation = mutationResolver.resolveMutation(projectionEvent, createEmployeeMutation, updateEmployeeMutation);
     prismaClient.mutate(mutation);
+  }
+
+  @Override
+  public String topologyName() {
+    return EMPLOYEE_TOPOLOGY_NAME;
+  }
+
+  @Override
+  public ImmutableSet<ProjectionIndex<StrawberryEmployeeProjectionEvent>> indices() {
+    return IStrawberryEmployeeProjectionEvent.INDICES;
+  }
+
+  @Override
+  public ProjectionEventStream<StrawberryEmployeeId, StrawberryEmployeeProjectionEvent> eventStream() {
+    return IStrawberryEmployeeProjectionEvent.eventStream();
   }
 }

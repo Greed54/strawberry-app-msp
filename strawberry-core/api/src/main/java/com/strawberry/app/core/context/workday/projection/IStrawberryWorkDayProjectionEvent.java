@@ -13,7 +13,6 @@ import com.strawberry.app.common.property.context.modified.HasOptionalModified;
 import com.strawberry.app.core.context.workday.identities.StrawberryWorkDayId;
 import com.strawberry.app.core.context.workday.properties.AllStrawberryWorkDayProps;
 import com.strawberry.app.core.context.workday.properties.HasStrawberryWorkDayId;
-import java.util.Set;
 import org.immutables.value.Value.Immutable;
 
 @Immutable
@@ -41,7 +40,7 @@ public interface IStrawberryWorkDayProjectionEvent extends ProjectionEvent<Straw
         StrawberryWorkDayProjectionEvent.class, StrawberryWorkDayId.class, "identity", StrawberryWorkDayProjectionEvent::identity);
   }
 
-  Set<ProjectionIndex<StrawberryWorkDayProjectionEvent>> INDICES = ImmutableSet.of(
+  ImmutableSet<ProjectionIndex<StrawberryWorkDayProjectionEvent>> INDICES = ImmutableSet.of(
       ProjectionIndex.hash(Attributes.WORK_DAY_ID)
   );
 }

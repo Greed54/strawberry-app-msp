@@ -13,7 +13,6 @@ import com.strawberry.app.common.property.context.modified.HasOptionalModified;
 import com.strawberry.app.core.context.box.identities.StrawberryBoxId;
 import com.strawberry.app.core.context.box.properties.AllStrawberryBoxProps;
 import com.strawberry.app.core.context.box.properties.HasStrawberryBoxId;
-import java.util.Set;
 import org.immutables.value.Value.Immutable;
 
 @Immutable
@@ -40,7 +39,7 @@ public interface IStrawberryBoxProjectionEvent extends ProjectionEvent<Strawberr
         StrawberryBoxProjectionEvent.class, StrawberryBoxId.class, "identity", StrawberryBoxProjectionEvent::identity);
   }
 
-  Set<ProjectionIndex<StrawberryBoxProjectionEvent>> INDICES = ImmutableSet.of(
+  ImmutableSet<ProjectionIndex<StrawberryBoxProjectionEvent>> INDICES = ImmutableSet.of(
       ProjectionIndex.hash(Attributes.BOX_ID)
   );
 }

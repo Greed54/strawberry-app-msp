@@ -5,20 +5,20 @@ import static com.googlecode.cqengine.query.QueryFactory.attribute;
 import com.google.common.collect.ImmutableSet;
 import com.googlecode.cqengine.attribute.support.AbstractAttribute;
 import com.strawberry.app.common.cqengine.ProjectionIndex;
+import com.strawberry.app.common.projection.ProjectionEvent;
 import com.strawberry.app.common.projection.ProjectionEventStream;
 import com.strawberry.app.common.property.context.HasRemoved;
 import com.strawberry.app.common.property.context.created.HasCreatedAt;
 import com.strawberry.app.common.property.context.created.HasOptionalCreatedBy;
 import com.strawberry.app.common.property.context.modified.HasOptionalModified;
-import com.strawberry.app.common.projection.ProjectionEvent;
 import com.strawberry.app.core.context.team.identities.StrawberryTeamId;
 import com.strawberry.app.core.context.team.properties.BaseStrawberryTeamProps;
 import com.strawberry.app.core.context.team.properties.HasStrawberryTeamId;
-import java.util.Set;
 import org.immutables.value.Value.Immutable;
 
 @Immutable
-public interface IStrawberryTeamProjectionEvent extends ProjectionEvent<StrawberryTeamId>, HasStrawberryTeamId, BaseStrawberryTeamProps, HasRemoved, HasCreatedAt,
+public interface IStrawberryTeamProjectionEvent extends ProjectionEvent<StrawberryTeamId>, HasStrawberryTeamId, BaseStrawberryTeamProps, HasRemoved,
+    HasCreatedAt,
     HasOptionalCreatedBy, HasOptionalModified {
 
   static ProjectionEventStream<StrawberryTeamId, StrawberryTeamProjectionEvent> eventStream() {
@@ -34,6 +34,7 @@ public interface IStrawberryTeamProjectionEvent extends ProjectionEvent<Strawber
       }
     };
   }
+
   class Attributes {
 
     public static AbstractAttribute<StrawberryTeamProjectionEvent, StrawberryTeamId> TEAM_ID = attribute(
@@ -41,7 +42,7 @@ public interface IStrawberryTeamProjectionEvent extends ProjectionEvent<Strawber
 
   }
 
-  Set<ProjectionIndex<StrawberryTeamProjectionEvent>> INDICES = ImmutableSet.of(
+  ImmutableSet<ProjectionIndex<StrawberryTeamProjectionEvent>> INDICES = ImmutableSet.of(
       ProjectionIndex.hash(Attributes.TEAM_ID)
   );
 }
