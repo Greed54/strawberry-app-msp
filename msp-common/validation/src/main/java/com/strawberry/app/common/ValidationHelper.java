@@ -6,7 +6,7 @@ import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.toSet;
 
 import com.strawberry.app.common.context.ValidationResult;
-import com.strawberry.app.common.event.BusinessEvent;
+import com.strawberry.app.common.event.business.BusinessEvent;
 import com.strawberry.app.common.projection.State;
 import com.strawberry.app.common.property.context.HasRemoved;
 import java.util.ArrayList;

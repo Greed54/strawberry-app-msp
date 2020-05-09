@@ -5,7 +5,7 @@ import com.strawberry.app.common.Command;
 import com.strawberry.app.common.Identity;
 import com.strawberry.app.common.behavior.DefaultBehaviorEngine;
 import com.strawberry.app.common.cqengine.ProjectionIndex;
-import com.strawberry.app.common.event.BusinessEvent;
+import com.strawberry.app.common.event.business.BusinessEvent;
 import com.strawberry.app.common.projection.State;
 import java.util.function.Function;
 

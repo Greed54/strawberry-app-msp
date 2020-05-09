@@ -3,7 +3,7 @@ package com.strawberry.app.common.behavior;
 import com.strawberry.app.common.Command;
 import com.strawberry.app.common.Identity;
 import com.strawberry.app.common.cqengine.RepositoryFactory;
-import com.strawberry.app.common.event.BusinessEvent;
+import com.strawberry.app.common.event.business.BusinessEvent;
 import com.strawberry.app.common.projection.Projection;
 import com.strawberry.app.common.projection.State;
 import java.util.Collection;

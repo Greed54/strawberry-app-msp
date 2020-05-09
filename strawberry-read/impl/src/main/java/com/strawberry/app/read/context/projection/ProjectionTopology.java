@@ -1,6 +1,6 @@
 package com.strawberry.app.read.context.projection;
 
-import static com.strawberry.app.common.MspApplicationProcessorConfiguration.PROJECTION_PROCESSOR_GROUP_NAME;
+import static com.strawberry.app.common.ProcessorGroupNames.PROJECTION_PROCESSOR_GROUP_NAME;
 
 import com.strawberry.app.common.projection.ProjectionEvent;
 import com.strawberry.app.common.topology.AbstractProjectionTopology;
@@ -22,8 +22,8 @@ public class ProjectionTopology implements AbstractProjectionTopology {
   @EventHandler
   @Override
   public void process(ProjectionEvent projectionEvent) {
-    log.info("Stored {}(identity={}), value: {}", projectionEvent.getClass().getSimpleName(), projectionEvent.identity(), projectionEvent);
     repositoryService.saveProjection(projectionEvent.identity(), projectionEvent);
+    log.info("Stored {}(identity={}), value: {}", projectionEvent.getClass().getSimpleName(), projectionEvent.identity(), projectionEvent);
   }
 
   @Override

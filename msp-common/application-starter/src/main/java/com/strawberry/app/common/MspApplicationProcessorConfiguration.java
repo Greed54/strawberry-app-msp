@@ -1,5 +1,9 @@
 package com.strawberry.app.common;
 
+import static com.strawberry.app.common.ProcessorGroupNames.EXTERNAL_PROJECTION_PROCESSOR_GROUP_NAME;
+import static com.strawberry.app.common.ProcessorGroupNames.LOGGING_PROCESSOR_GROUP_NAME;
+import static com.strawberry.app.common.ProcessorGroupNames.PROJECTION_PROCESSOR_GROUP_NAME;
+
 import com.strawberry.app.common.event.MspApplicationRebalancingStartedEvent;
 import com.strawberry.app.common.event.MspApplicationRebalancingStoppedEvent;
 import com.strawberry.app.common.event.MspApplicationStartedEvent;
@@ -10,6 +14,7 @@ import java.util.OptionalLong;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +31,6 @@ import org.springframework.context.event.EventListener;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MspApplicationProcessorConfiguration {
 
-  public static final String PROJECTION_PROCESSOR_GROUP_NAME = "projection-adapters";
-
   final EventProcessingConfiguration processingConfiguration;
   final ApplicationEventPublisher applicationEventPublisher;
 
@@ -43,6 +46,10 @@ public class MspApplicationProcessorConfiguration {
   public void applicationStarted(MspApplicationStartedEvent event) {
     processingConfiguration.eventProcessorByProcessingGroup(PROJECTION_PROCESSOR_GROUP_NAME, TrackingEventProcessor.class)
         .ifPresent(TrackingEventProcessor::shutDown);
+    processingConfiguration.eventProcessorByProcessingGroup(EXTERNAL_PROJECTION_PROCESSOR_GROUP_NAME, TrackingEventProcessor.class)
+        .ifPresent(TrackingEventProcessor::shutDown);
+    processingConfiguration.eventProcessorByProcessingGroup(LOGGING_PROCESSOR_GROUP_NAME, TrackingEventProcessor.class)
+        .ifPresent(TrackingEventProcessor::shutDown);
     executorService = Executors.newSingleThreadScheduledExecutor();
 
     executorService.schedule(() ->
@@ -57,6 +64,11 @@ public class MspApplicationProcessorConfiguration {
           trackingEventProcessor.resetTokens(StreamableMessageSource::createTailToken);
           trackingEventProcessor.start();
         });
+    processingConfiguration.eventProcessorByProcessingGroup(EXTERNAL_PROJECTION_PROCESSOR_GROUP_NAME, TrackingEventProcessor.class)
+        .ifPresent(trackingEventProcessor -> {
+          trackingEventProcessor.resetTokens(StreamableMessageSource::createTailToken);
+          trackingEventProcessor.start();
+        });
     applicationEventPublisher.publishEvent(new MspRebalancingSchedulerStartedEvent(event));
   }
 
@@ -65,6 +77,8 @@ public class MspApplicationProcessorConfiguration {
     executorService.shutdown();
     processingConfiguration.eventProcessorByProcessingGroup(PROJECTION_PROCESSOR_GROUP_NAME, TrackingEventProcessor.class)
         .ifPresent(TrackingEventProcessor::shutDown);
+    processingConfiguration.eventProcessorByProcessingGroup(LOGGING_PROCESSOR_GROUP_NAME, TrackingEventProcessor.class)
+        .ifPresent(TrackingEventProcessor::start);
     log.info("Rebalancing Scheduler stopped");
     applicationEventPublisher.publishEvent(new MspApplicationRebalancingStoppedEvent(event));
   }
@@ -72,8 +86,21 @@ public class MspApplicationProcessorConfiguration {
   @EventListener
   public void startRebalancingScheduler(MspRebalancingSchedulerStartedEvent event) {
     executorService = Executors.newSingleThreadScheduledExecutor();
-    Runnable runnableTask = () -> processingConfiguration
-        .eventProcessorByProcessingGroup(PROJECTION_PROCESSOR_GROUP_NAME, TrackingEventProcessor.class)
+    Runnable runnableTask = () -> {
+      boolean internalRebalancingFinish = isProcessingGroupRebalancingFinished(PROJECTION_PROCESSOR_GROUP_NAME);
+      boolean externalRebalancingFinish = isProcessingGroupRebalancingFinished(EXTERNAL_PROJECTION_PROCESSOR_GROUP_NAME);
+      if (internalRebalancingFinish && externalRebalancingFinish) {
+        applicationEventPublisher.publishEvent(new MspRebalancingSchedulerStoppedEvent(event));
+      }
+    };
+    executorService.scheduleAtFixedRate(runnableTask, 0, 100, TimeUnit.MILLISECONDS);
+    log.info("Rebalancing Scheduler started");
+  }
+
+  private boolean isProcessingGroupRebalancingFinished(String processorGroupName) {
+    AtomicBoolean isFinish = new AtomicBoolean(false);
+    processingConfiguration
+        .eventProcessorByProcessingGroup(processorGroupName, TrackingEventProcessor.class)
         .ifPresent(trackingEventProcessor -> {
           OptionalLong headTokenPosition = trackingEventProcessor.getMessageSource().createHeadToken().position();
           trackingEventProcessor.processingStatus()
@@ -81,14 +108,12 @@ public class MspApplicationProcessorConfiguration {
                     TrackingToken trackingToken = eventTrackerStatus.getTrackingToken();
                     if (headTokenPosition.isPresent() && Objects.nonNull(trackingToken) && trackingToken.position().isPresent()) {
                       if (trackingToken.position().getAsLong() == headTokenPosition.getAsLong()) {
-                        applicationEventPublisher.publishEvent(new MspRebalancingSchedulerStoppedEvent(event));
+                        isFinish.set(true);
                       }
                     }
                   }
               );
-
         });
-    executorService.scheduleAtFixedRate(runnableTask, 0, 100, TimeUnit.MILLISECONDS);
-    log.info("Rebalancing Scheduler started");
+    return isFinish.get();
   }
 }
