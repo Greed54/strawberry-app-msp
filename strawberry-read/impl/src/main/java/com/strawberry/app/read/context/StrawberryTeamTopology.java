@@ -10,12 +10,14 @@ import com.stawberry.app.read.prisma.graphql.type.SEmployeeCreateInput;
 import com.stawberry.app.read.prisma.graphql.type.SEmployeeCreateOneInput;
 import com.stawberry.app.read.prisma.graphql.type.SEmployeeUpdateOneInput;
 import com.stawberry.app.read.prisma.graphql.type.SEmployeeWhereUniqueInput;
+import com.stawberry.app.read.prisma.graphql.type.SPersonCreateOneInput;
+import com.stawberry.app.read.prisma.graphql.type.SPersonUpdateOneInput;
+import com.stawberry.app.read.prisma.graphql.type.SPersonWhereUniqueInput;
 import com.stawberry.app.read.prisma.graphql.type.STeamCreateInput;
 import com.stawberry.app.read.prisma.graphql.type.STeamUpdateInput;
 import com.stawberry.app.read.prisma.graphql.type.STeamWhereUniqueInput;
 import com.strawberry.app.common.cqengine.ProjectionIndex;
 import com.strawberry.app.common.projection.ProjectionEventStream;
-import com.strawberry.app.common.property.context.identity.BaseStringId;
 import com.strawberry.app.common.topology.AbstractTopology;
 import com.strawberry.app.core.context.team.identities.StrawberryTeamId;
 import com.strawberry.app.core.context.team.projection.IStrawberryTeamProjectionEvent;
@@ -61,7 +63,13 @@ public class StrawberryTeamTopology implements AbstractTopology<StrawberryTeamId
                 .build()).orElse(null))
             .removed(projectionEvent.removed())
             ._createdAt(projectionEvent.createdAt())
-            .createdBy(Optional.ofNullable(projectionEvent.createdBy()).map(BaseStringId::value).orElse(null))
+            .createdBy(Optional.ofNullable(projectionEvent.createdBy())
+                .map(personId -> SPersonCreateOneInput.builder()
+                    .connect(SPersonWhereUniqueInput.builder()
+                        .coreID(personId.value())
+                        .build())
+                    .build())
+                .orElse(null))
             .build())
         .build();
 
@@ -78,7 +86,13 @@ public class StrawberryTeamTopology implements AbstractTopology<StrawberryTeamId
                 .build()).orElse(null))
             .removed(projectionEvent.removed())
             .modifiedAt(projectionEvent.modifiedAt())
-            .modifiedBy(Optional.ofNullable(projectionEvent.modifiedBy()).map(BaseStringId::value).orElse(null))
+            .modifiedBy(Optional.ofNullable(projectionEvent.modifiedBy())
+                .map(personId -> SPersonUpdateOneInput.builder()
+                    .connect(SPersonWhereUniqueInput.builder()
+                        .coreID(personId.value())
+                        .build())
+                    .build())
+                .orElse(null))
             .build())
         .where(STeamWhereUniqueInput.builder()
             .coreID(projectionEvent.identity().value())

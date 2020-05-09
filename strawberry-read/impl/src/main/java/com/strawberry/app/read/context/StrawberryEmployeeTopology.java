@@ -9,12 +9,14 @@ import com.stawberry.app.read.prisma.graphql.UpdateSEmployeeMutation;
 import com.stawberry.app.read.prisma.graphql.type.SEmployeeCreateInput;
 import com.stawberry.app.read.prisma.graphql.type.SEmployeeUpdateInput;
 import com.stawberry.app.read.prisma.graphql.type.SEmployeeWhereUniqueInput;
+import com.stawberry.app.read.prisma.graphql.type.SPersonCreateOneInput;
+import com.stawberry.app.read.prisma.graphql.type.SPersonUpdateOneInput;
+import com.stawberry.app.read.prisma.graphql.type.SPersonWhereUniqueInput;
 import com.stawberry.app.read.prisma.graphql.type.STeamCreateOneWithoutEmployeesInput;
 import com.stawberry.app.read.prisma.graphql.type.STeamUpdateOneWithoutEmployeesInput;
 import com.stawberry.app.read.prisma.graphql.type.STeamWhereUniqueInput;
 import com.strawberry.app.common.cqengine.ProjectionIndex;
 import com.strawberry.app.common.projection.ProjectionEventStream;
-import com.strawberry.app.common.property.context.identity.BaseStringId;
 import com.strawberry.app.common.topology.AbstractTopology;
 import com.strawberry.app.core.context.employee.identities.StrawberryEmployeeId;
 import com.strawberry.app.core.context.employee.projection.IStrawberryEmployeeProjectionEvent;
@@ -59,7 +61,18 @@ public class StrawberryEmployeeTopology implements AbstractTopology<StrawberryEm
                     .coreID(projectionEvent.teamId().value())
                     .build())
                 .build())
-            .createdBy(Optional.ofNullable(projectionEvent.createdBy()).map(BaseStringId::value).orElse(null))
+            .person(SPersonCreateOneInput.builder()
+                .connect(SPersonWhereUniqueInput.builder()
+                    .coreID(projectionEvent.personId().value())
+                    .build())
+                .build())
+            .createdBy(Optional.ofNullable(projectionEvent.createdBy())
+                .map(personId -> SPersonCreateOneInput.builder()
+                    .connect(SPersonWhereUniqueInput.builder()
+                        .coreID(personId.value())
+                        .build())
+                    .build())
+                .orElse(null))
             ._createdAt(projectionEvent.createdAt())
             .removed(projectionEvent.removed())
             .build())
@@ -77,7 +90,18 @@ public class StrawberryEmployeeTopology implements AbstractTopology<StrawberryEm
                     .coreID(projectionEvent.teamId().value())
                     .build())
                 .build())
-            .modifiedBy(Optional.ofNullable(projectionEvent.modifiedBy()).map(BaseStringId::value).orElse(null))
+            .person(SPersonUpdateOneInput.builder()
+                .connect(SPersonWhereUniqueInput.builder()
+                    .coreID(projectionEvent.personId().value())
+                    .build())
+                .build())
+            .modifiedBy(Optional.ofNullable(projectionEvent.modifiedBy())
+                .map(personId -> SPersonUpdateOneInput.builder()
+                    .connect(SPersonWhereUniqueInput.builder()
+                        .coreID(personId.value())
+                        .build())
+                    .build())
+                .orElse(null))
             .modifiedAt(projectionEvent.modifiedAt())
             .removed(projectionEvent.removed())
             .build())

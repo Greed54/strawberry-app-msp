@@ -50,6 +50,7 @@ public class AddStrawberryEmployeeBehavior implements
   public StrawberryEmployee eventToState(StrawberryEmployeeEvent event, Optional<StrawberryEmployee> current) {
     return StrawberryEmployee.builder()
         .from(event)
+        .createdBy(((StrawberryEmployeeAddedEvent) event).createdBy())
         .build();
   }
 

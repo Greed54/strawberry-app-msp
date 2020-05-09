@@ -5,6 +5,7 @@ import com.strawberry.app.core.context.box.event.StrawberryBoxAddedEvent;
 import com.strawberry.app.core.context.employee.StrawberryEmployee;
 import com.strawberry.app.core.context.employee.identities.StrawberryEmployeeId;
 import com.strawberry.app.core.context.employee.service.StrawberryEmployeeService;
+import com.strawberry.app.core.context.person.identities.StrawberryPersonId;
 import com.strawberry.app.core.context.team.StrawberryTeam;
 import com.strawberry.app.core.context.team.service.StrawberryTeamService;
 import com.strawberry.app.core.context.workday.StrawberryWorkDay;
@@ -12,6 +13,7 @@ import com.strawberry.app.core.context.workday.command.AddStrawberryWorkDayTeamC
 import com.strawberry.app.core.context.workday.service.StrawberryWorkDayService;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.axonframework.commandhandling.gateway.CommandGateway;
@@ -49,18 +51,27 @@ public class StrawberryBoxToWorkDayAssociationEventHandler {
 
   private void addTeamToWorkDay(StrawberryWorkDay strawberryWorkDay, StrawberryEmployeeId employeeId) {
 
-    Optional<StrawberryTeam> strawberryTeam = strawberryEmployeeService.getEmployee(employeeId).stream()
+    Stream<StrawberryEmployee> employeeStream = strawberryEmployeeService.getEmployee(employeeId).stream();
+
+    Optional<StrawberryTeam> strawberryTeam = employeeStream
         .map(StrawberryEmployee::teamId)
         .map(strawberryTeamService::getTeamOrThrow)
         .findFirst();
+
+    PersonId personId = employeeStream
+        .map(StrawberryEmployee::personId)
+        .findFirst()
+        .map(StrawberryPersonId::value)
+        .map(PersonId::new)
+        .get();
 
     strawberryTeam.ifPresent(team -> {
       if (!strawberryWorkDay.teamIds().contains(team.identity())) {
         AddStrawberryWorkDayTeamCommand addStrawberryWorkDayTeamCommand = AddStrawberryWorkDayTeamCommand.builder()
             .identity(strawberryWorkDay.identity())
             .teamId(team.identity())
-            .modifiedAt(Instant.now()) //TODO: ModifiedBy
-            .modifiedBy(PersonId.next())
+            .modifiedAt(Instant.now())
+            .modifiedBy(personId)
             .build();
 
         commandGateway.send(addStrawberryWorkDayTeamCommand);

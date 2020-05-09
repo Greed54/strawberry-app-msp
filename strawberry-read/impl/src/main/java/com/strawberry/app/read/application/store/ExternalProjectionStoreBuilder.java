@@ -9,6 +9,9 @@ import com.strawberry.app.core.context.box.projecton.StrawberryBoxProjectionEven
 import com.strawberry.app.core.context.employee.identities.StrawberryEmployeeId;
 import com.strawberry.app.core.context.employee.projection.IStrawberryEmployeeProjectionEvent;
 import com.strawberry.app.core.context.employee.projection.StrawberryEmployeeProjectionEvent;
+import com.strawberry.app.core.context.person.identities.StrawberryPersonId;
+import com.strawberry.app.core.context.person.projection.IStrawberryPersonProjectionEvent;
+import com.strawberry.app.core.context.person.projection.StrawberryPersonProjectionEvent;
 import com.strawberry.app.core.context.team.identities.StrawberryTeamId;
 import com.strawberry.app.core.context.team.projection.IStrawberryTeamProjectionEvent;
 import com.strawberry.app.core.context.team.projection.StrawberryTeamProjectionEvent;
@@ -65,6 +68,17 @@ public class ExternalProjectionStoreBuilder {
         .build();
 
     return (IndexedStoreImpl<StrawberryBoxId, StrawberryBoxProjectionEvent>) builder.build();
+  }
+
+  public static IndexedStoreImpl<StrawberryPersonId, StrawberryPersonProjectionEvent> buildStrawberryPersonProjectionStore() {
+    IndexedProjectionStoreBuilder<StrawberryPersonId, StrawberryPersonProjectionEvent> builder = IndexedProjectionStoreBuilder.<StrawberryPersonId, StrawberryPersonProjectionEvent>builder()
+        .name(StrawberryPersonProjectionEvent.class.getName())
+        .eventStream(IStrawberryPersonProjectionEvent.eventStream())
+        .indices(StrawberryPersonProjectionEvent.INDICES)
+        .identityGetter(StrawberryPersonProjectionEvent::identity)
+        .build();
+
+    return (IndexedStoreImpl<StrawberryPersonId, StrawberryPersonProjectionEvent>) builder.build();
   }
 
   public static List<IndexedStoreImpl> buildProjectionStores(List<AbstractTopology> topologies) {

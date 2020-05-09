@@ -22,8 +22,8 @@ public class EmployeeController {
   StrawberryEmployeeCommandServiceImpl commandService;
 
   @PostMapping("/api/addEmployee")
-  public Mono<String> addEmployee(@RequestBody AddStrawberryEmployeeCommand addStrawberryEmployeeCommand) {
-    return commandService.createEmployee(addStrawberryEmployeeCommand);
+  public String addEmployee(@RequestBody AddStrawberryEmployeeCommand addStrawberryEmployeeCommand) {
+    return commandService.createEmployee(addStrawberryEmployeeCommand).toString();
   }
 
   @PostMapping("/api/amendEmployee")

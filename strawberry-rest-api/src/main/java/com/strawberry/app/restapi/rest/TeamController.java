@@ -19,8 +19,8 @@ public class TeamController {
   StrawberryTeamCommandServiceImpl commandService;
 
   @PostMapping("api/addTeam")
-  public Mono<String> addTeam(@RequestBody AddStrawberryTeamCommand addStrawberryTeamCommand) {
-    return commandService.createTeam(addStrawberryTeamCommand);
+  public String addTeam(@RequestBody AddStrawberryTeamCommand addStrawberryTeamCommand) {
+    return commandService.createTeam(addStrawberryTeamCommand).toString();
   }
 
   @PostMapping("api/amendTeam")

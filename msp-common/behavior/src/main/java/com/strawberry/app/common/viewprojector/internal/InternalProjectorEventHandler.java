@@ -22,8 +22,11 @@ public class InternalProjectorEventHandler {
 
   @EventHandler
   public void convert(BusinessEvent businessEvent) {
-    internalProjectionAdapterEngine.getAdapter(businessEvent.getClass()).convert(businessEvent);
-    log.info("Restored {}(identity={}), value: {}", businessEvent.getClass().getSimpleName(), businessEvent.identity(), businessEvent);
+    InternalAbstractProjectionAdapter adapter = internalProjectionAdapterEngine.getAdapter(businessEvent.getClass());
+    if (adapter != null) {
+      adapter.convert(businessEvent);
+      log.info("Restored {}(identity={}), value: {}", businessEvent.getClass().getSimpleName(), businessEvent.identity(), businessEvent);
+    }
   }
 
 }

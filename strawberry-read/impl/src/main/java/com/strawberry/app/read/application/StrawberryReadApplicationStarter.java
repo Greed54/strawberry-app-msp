@@ -35,7 +35,8 @@ public class StrawberryReadApplicationStarter {
         ExternalProjectionStoreBuilder.buildStrawberryEmployeeProjectionStore(),
         ExternalProjectionStoreBuilder.buildStrawberryTeamProjectionStore(),
         ExternalProjectionStoreBuilder.buildStrawberryWorkDayProjectionStore(),
-        ExternalProjectionStoreBuilder.buildStrawberryBoxProjectionStore()
+        ExternalProjectionStoreBuilder.buildStrawberryBoxProjectionStore(),
+        ExternalProjectionStoreBuilder.buildStrawberryPersonProjectionStore()
     )
         .stream()
         .peek(indexedStore -> indexedStore.init(applicationProperties.getStateDir(), objectMapper))

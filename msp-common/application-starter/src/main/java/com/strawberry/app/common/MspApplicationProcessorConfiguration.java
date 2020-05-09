@@ -110,6 +110,8 @@ public class MspApplicationProcessorConfiguration {
                       if (trackingToken.position().getAsLong() == headTokenPosition.getAsLong()) {
                         isFinish.set(true);
                       }
+                    } else if (headTokenPosition.isPresent() && headTokenPosition.getAsLong() == -1 && Objects.isNull(trackingToken)) {
+                      isFinish.set(true);
                     }
                   }
               );

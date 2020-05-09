@@ -6,6 +6,9 @@ import com.apollographql.apollo.api.Mutation;
 import com.google.common.collect.ImmutableSet;
 import com.stawberry.app.read.prisma.graphql.CreateSWorkDayMutation;
 import com.stawberry.app.read.prisma.graphql.UpdateSWorkDayMutation;
+import com.stawberry.app.read.prisma.graphql.type.SPersonCreateOneInput;
+import com.stawberry.app.read.prisma.graphql.type.SPersonUpdateOneInput;
+import com.stawberry.app.read.prisma.graphql.type.SPersonWhereUniqueInput;
 import com.stawberry.app.read.prisma.graphql.type.STeamCreateManyInput;
 import com.stawberry.app.read.prisma.graphql.type.STeamUpdateManyInput;
 import com.stawberry.app.read.prisma.graphql.type.STeamWhereUniqueInput;
@@ -14,7 +17,6 @@ import com.stawberry.app.read.prisma.graphql.type.SWorkDayUpdateInput;
 import com.stawberry.app.read.prisma.graphql.type.SWorkDayWhereUniqueInput;
 import com.strawberry.app.common.cqengine.ProjectionIndex;
 import com.strawberry.app.common.projection.ProjectionEventStream;
-import com.strawberry.app.common.property.context.identity.BaseStringId;
 import com.strawberry.app.common.topology.AbstractTopology;
 import com.strawberry.app.core.context.workday.identities.StrawberryWorkDayId;
 import com.strawberry.app.core.context.workday.projection.IStrawberryWorkDayProjectionEvent;
@@ -60,7 +62,13 @@ public class StrawberryWorkDayTopology implements AbstractTopology<StrawberryWor
             .tareWeight(projectionEvent.tareWeight())
             ._createdAt(projectionEvent.createdAt())
             .modifiedAt(projectionEvent.modifiedAt())
-            .modifiedBy(Optional.ofNullable(projectionEvent.modifiedBy()).map(BaseStringId::value).orElse(null))
+            .modifiedBy(Optional.ofNullable(projectionEvent.modifiedBy())
+                .map(personId -> SPersonCreateOneInput.builder()
+                    .connect(SPersonWhereUniqueInput.builder()
+                        .coreID(personId.value())
+                        .build())
+                    .build())
+                .orElse(null))
             .removed(projectionEvent.removed())
             .build())
         .build();
@@ -76,7 +84,13 @@ public class StrawberryWorkDayTopology implements AbstractTopology<StrawberryWor
             .tareWeight(projectionEvent.tareWeight())
             ._createdAt(projectionEvent.createdAt())
             .modifiedAt(projectionEvent.modifiedAt())
-            .modifiedBy(Optional.ofNullable(projectionEvent.modifiedBy()).map(BaseStringId::value).orElse(null))
+            .modifiedBy(Optional.ofNullable(projectionEvent.modifiedBy())
+                .map(personId -> SPersonUpdateOneInput.builder()
+                    .connect(SPersonWhereUniqueInput.builder()
+                        .coreID(personId.value())
+                        .build())
+                    .build())
+                .orElse(null))
             .removed(projectionEvent.removed())
             .build())
         .where(SWorkDayWhereUniqueInput.builder()

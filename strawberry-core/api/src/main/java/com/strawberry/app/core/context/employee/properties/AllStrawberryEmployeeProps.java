@@ -7,6 +7,7 @@ public interface AllStrawberryEmployeeProps extends HasStrawberryCardId,
     HasStrawberryEmployeeLastName,
     HasStrawberryEmployeeRole,
     HasStrawberryEmployeeTeamId,
-    HasStrawberryEmployeeNote {
+    HasStrawberryEmployeeNote,
+    HasStrawberryEmployeePersonId {
 
 }

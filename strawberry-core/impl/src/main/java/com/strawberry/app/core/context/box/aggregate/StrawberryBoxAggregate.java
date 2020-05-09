@@ -9,6 +9,7 @@ import com.strawberry.app.common.behavior.Behavior;
 import com.strawberry.app.common.behavior.DefaultBehaviorEngine;
 import com.strawberry.app.common.cqengine.ProjectionIndex;
 import com.strawberry.app.common.property.context.identity.PersonId;
+import com.strawberry.app.common.property.context.identity.card.CardId;
 import com.strawberry.app.core.context.box.StrawberryBox;
 import com.strawberry.app.core.context.box.command.AddStrawberryBoxCommand;
 import com.strawberry.app.core.context.box.command.StrawberryBoxCommand;
@@ -19,6 +20,7 @@ import com.strawberry.app.core.context.box.identities.StrawberryBoxId;
 import com.strawberry.app.core.context.box.projecton.StrawberryBoxProjectionEvent;
 import com.strawberry.app.core.context.box.properties.HasStrawberryBoxId;
 import com.strawberry.app.core.context.box.service.StrawberryBoxService;
+import com.strawberry.app.core.context.employee.service.StrawberryEmployeeService;
 import com.strawberry.app.core.context.workday.StrawberryWorkDay;
 import com.strawberry.app.core.context.workday.aggregate.StrawberryWorkDayAggregate;
 import com.strawberry.app.core.context.workday.event.StrawberryWorkDayInitiatedEvent;
@@ -53,7 +55,7 @@ public class StrawberryBoxAggregate implements AbstractAggregate<StrawberryBoxId
 
   @CommandHandler
   public StrawberryBoxAggregate(AddStrawberryBoxCommand command, DefaultBehaviorEngine defaultBehaviorEngine, StrawberryBoxService boxService,
-      StrawberryWorkDayService workDayService) {
+      StrawberryWorkDayService workDayService, StrawberryEmployeeService employeeService) {
     Behavior<StrawberryBoxId, StrawberryBoxEvent, StrawberryBoxCommand, StrawberryBox> behavior = defaultBehaviorEngine
         .getBehavior(command.getClass());
     behavior.commandToEvents(command, boxService.getBox(command.identity()))
@@ -62,7 +64,7 @@ public class StrawberryBoxAggregate implements AbstractAggregate<StrawberryBoxId
             initiateStrawberryWorkDay();
           }
           apply(strawberryBoxEvent);
-          apply(amendBoxWorkDay(command, workDayService));
+          apply(amendBoxWorkDay(command, workDayService, employeeService));
         });
   }
 
@@ -113,13 +115,14 @@ public class StrawberryBoxAggregate implements AbstractAggregate<StrawberryBoxId
     createNew(StrawberryWorkDayAggregate.class, () -> new StrawberryWorkDayAggregate(workDayInitiatedEvent));
   }
 
-  private StrawberryBoxWorkDayAmendedEvent amendBoxWorkDay(AddStrawberryBoxCommand command, StrawberryWorkDayService workDayService) {
+  private StrawberryBoxWorkDayAmendedEvent amendBoxWorkDay(AddStrawberryBoxCommand command, StrawberryWorkDayService workDayService,
+      StrawberryEmployeeService employeeService) {
     Optional<StrawberryWorkDay> nowStrawberryWorkDay = workDayService.getNowStrawberryWorkDay();
     return StrawberryBoxWorkDayAmendedEvent.builder()
         .identity(command.identity())
         .workDayId(nowStrawberryWorkDay.get().identity())
         .modifiedAt(command.createdAt())
-        .modifiedBy(new PersonId())
+        .modifiedBy(new PersonId(employeeService.getEmployeeByCardIdOrThrow(new CardId(command.cardId())).personId().value()))
         .build();
   }
 }

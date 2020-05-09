@@ -1,0 +1,5 @@
+mutation CreateSPerson($data: SPersonCreateInput!){
+    createSPerson(data: $data) {
+        coreID
+    }
+}

@@ -43,4 +43,9 @@ public class StrawberryEmployeeService {
   public List<StrawberryEmployee> getEmployeesByCardId(CardId cardId) {
     return repositoryService.retrieve(QueryFactory.equal(Attributes.CARD_ID, cardId), StrawberryEmployee.class);
   }
+
+  public StrawberryEmployee getEmployeeByCardIdOrThrow(CardId cardId) {
+    return repositoryService.retrieveUnique(QueryFactory.equal(Attributes.CARD_ID, cardId), StrawberryEmployee.class)
+        .orElseThrow(() -> new IllegalStateException(String.format("StrawberryEmployee not present by card id %s", cardId)));
+  }
 }

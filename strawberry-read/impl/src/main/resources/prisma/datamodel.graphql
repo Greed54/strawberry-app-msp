@@ -8,9 +8,10 @@ type SEmployee {
     note: String
     team: STeam @relation(name: "TeamEmployeeRelation")
     boxes: [SBox!]! @relation(name: "BoxEmployeeRelation")
-    createdBy: String
+    person: SPerson @relation(name: "PersonEmployeeRelation")
+    createdBy: SPerson @relation(name: "CreatedEmployeeRelation")
     _createdAt: DateTime
-    modifiedBy: String
+    modifiedBy: SPerson @relation(name: "ModifiedEmployeeRelation")
     modifiedAt: DateTime
     removed: Boolean
 }
@@ -21,9 +22,9 @@ type STeam {
     teamName: String
     teamLead: SEmployee @relation(name: "TeamLeadEmployeeRelation")
     employees: [SEmployee!]! @relation(name: "TeamEmployeeRelation")
-    createdBy: String
+    createdBy: SPerson @relation(name: "CreatedTeamRelation")
     _createdAt: DateTime
-    modifiedBy: String
+    modifiedBy: SPerson @relation(name: "ModifiedTeamRelation")
     modifiedAt: DateTime
     removed: Boolean
 }
@@ -32,14 +33,11 @@ type SWorkDay {
     id: ID! @id
     coreID: String @unique
     date: DateTime
-    #boxes: Int #calculated
-    #kilograms: Float #calculated
-    #allSalarys: Float #calculated
     teams: [STeam!]!
     pricePerKilo: Float
     tareWeight: Float
     _createdAt: DateTime
-    modifiedBy: String
+    modifiedBy: SPerson
     modifiedAt: DateTime
     removed: Boolean
 }
@@ -53,9 +51,21 @@ type SBox {
     boxAmount: Int
     weightId: Int
     _createdAt: DateTime
-    modifiedBy: String
+    modifiedBy: SPerson
     modifiedAt: DateTime
     removed: Boolean
+}
+
+type SPerson {
+    id: ID! @id
+    coreID: String @unique
+    firstName: String
+    lastName: String
+    username: String
+    isAdmin: Boolean
+    removed: Boolean
+    _createdAt: DateTime
+    modifiedAt: DateTime
 }
 
 scalar DateTime

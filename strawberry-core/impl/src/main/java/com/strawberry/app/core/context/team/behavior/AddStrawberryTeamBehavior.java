@@ -39,6 +39,7 @@ public class AddStrawberryTeamBehavior implements
   public StrawberryTeam eventToState(StrawberryTeamEvent event, Optional<StrawberryTeam> current) {
     return StrawberryTeam.builder()
         .from(event)
+        .createdBy(((StrawberryTeamAddedEvent) event).createdBy())
         .build();
   }
 
