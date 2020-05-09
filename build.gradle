@@ -302,7 +302,6 @@ project(":strawberry-core") {
             compile project(":strawberry-core:api")
             compile project(":msp-common:behavior")
             compile project(":msp-common:validation")
-            compile project(":msp-common:application-starter")
 
             /* Spring */
             compile('org.springframework.boot:spring-boot-starter')
@@ -438,7 +437,6 @@ project(":strawberry-read") {
             compile project(":strawberry-read:api")
             compile project(":msp-common:behavior")
             compile project(":msp-common:statestore")
-            compile project(":msp-common:application-starter")
 
             /* Spring */
             compile('org.springframework.boot:spring-boot-starter')
@@ -677,7 +675,10 @@ project(":msp-common") {
 
         dependencies {
 
+            compile('org.springframework.boot:spring-boot-starter')
+            compile("org.axonframework:axon-spring-boot-starter:${axonVersion}")
             compile project(":msp-common:statestore")
+            compile project(":msp-common:application-starter")
         }
 
         publishing {

@@ -3,8 +3,6 @@ package com.strawberry.app.core.application;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.strawberry.app.common.aggregate.AbstractAggregate;
-import com.strawberry.app.common.behavior.Behavior;
-import com.strawberry.app.common.behavior.DefaultBehaviorEngine;
 import com.strawberry.app.common.cqengine.RepositoryFactory;
 import com.strawberry.app.common.cqengine.indexedstore.IndexedStoreImpl;
 import com.strawberry.app.core.application.store.InternalStoreBuilder;
@@ -27,11 +25,6 @@ public class StrawberryCoreApplicationStarter {
   @Bean
   public RepositoryFactory repositoryFactory(List<IndexedStoreImpl> indexedStores) {
     return new RepositoryFactory(indexedStores);
-  }
-
-  @Bean
-  public DefaultBehaviorEngine defaultBehaviorEngine(RepositoryFactory repositoryFactory, List<Behavior> behaviors) {
-    return new DefaultBehaviorEngine(repositoryFactory, behaviors);
   }
 
   @Bean

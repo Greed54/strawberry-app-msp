@@ -22,14 +22,12 @@ import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 
-@Slf4j
 @Aggregate
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StrawberryWorkDayAggregate implements
@@ -56,7 +54,8 @@ public class StrawberryWorkDayAggregate implements
   }
 
   @CommandHandler
-  public void handleEx(AddStrawberryWorkDayTeamCommand command, DefaultBehaviorEngine defaultBehaviorEngine, StrawberryWorkDayService workDayService) {
+  public void handleEx(AddStrawberryWorkDayTeamCommand command, DefaultBehaviorEngine defaultBehaviorEngine,
+      StrawberryWorkDayService workDayService) {
     Behavior<StrawberryWorkDayId, StrawberryWorkDayEvent, StrawberryWorkDayCommand, StrawberryWorkDay> behavior = defaultBehaviorEngine
         .getBehavior(command.getClass());
     behavior.commandToEvents(command, workDayService.getWorkDay(command.identity())).forEach(AggregateLifecycle::apply);
@@ -67,7 +66,7 @@ public class StrawberryWorkDayAggregate implements
   public void handleEvent(StrawberryWorkDayEvent businessEvent, DefaultBehaviorEngine behaviorEngine) {
     if (!(businessEvent instanceof StrawberryWorkDayFailedEvent)) {
       Behavior<StrawberryWorkDayId, StrawberryWorkDayEvent, StrawberryWorkDayCommand, StrawberryWorkDay> behavior = behaviorEngine
-        .getBehavior(businessEvent.getClass());
+          .getBehavior(businessEvent.getClass());
 
       this.identity = businessEvent.identity();
       this.workDay = behavior.eventToState(businessEvent, Optional.ofNullable(workDay));
@@ -96,11 +95,8 @@ public class StrawberryWorkDayAggregate implements
 
   @Override
   public void publishProjectionEvent(StrawberryWorkDay state) {
-    StrawberryWorkDayProjectionEvent workDayProjectionEvent = StrawberryWorkDayProjectionEvent.builder()
+    apply(StrawberryWorkDayProjectionEvent.builder()
         .from((HasStrawberryWorkDayId) state)
-        .build();
-    apply(workDayProjectionEvent);
-    log.info("Publish projection event{}(identity={}), value: {}", workDayProjectionEvent.getClass().getSimpleName(),
-        workDayProjectionEvent.identity(), workDayProjectionEvent);
+        .build());
   }
 }

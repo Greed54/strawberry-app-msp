@@ -44,6 +44,6 @@ public class StrawberryCoreProcessorConfiguration {
 
   public TrackingEventProcessorConfiguration configuration() {
     return TrackingEventProcessorConfiguration.forSingleThreadedProcessing()
-        .andInitialTrackingToken(StreamableMessageSource::createTailToken);
+        .andInitialTrackingToken(StreamableMessageSource::createHeadToken);
   }
 }
